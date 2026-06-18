@@ -1,0 +1,14 @@
+[Unit]
+Description=Autopsy Forensic Browser
+After=network.target
+
+[Service]
+Type=simple
+User=dragonpi
+WorkingDirectory=/var/lib/autopsy
+ExecStart=/usr/bin/perl -w /usr/bin/autopsy
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
