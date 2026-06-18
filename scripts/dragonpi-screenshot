@@ -38,3 +38,8 @@ else
   rm -f "$TMP_FILE"
   exit 1
 fi
+
+# Clean up Chromium temp files to prevent storage bloat
+# Headless Chromium may leave singleton locks, sockets, and shader caches
+rm -rf /tmp/.org.chromium.* /tmp/.com.google.Chrome.* 2>/dev/null || true
+rm -rf /home/dragonpi/.cache/chromium/ 2>/dev/null || true
