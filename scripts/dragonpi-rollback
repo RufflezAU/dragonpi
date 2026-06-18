@@ -1,0 +1,86 @@
+#!/bin/bash
+# ================================================================
+#  DragonPi Rollback — Restore from a backup
+#  Usage: dragonpi-rollback [TIMESTAMP]
+#         dragonpi-rollback           (list available backups)
+#         dragonpi-rollback 20260618-120000  (restore that backup)
+# ================================================================
+BACKUP_DIR="/opt/dragonpi/.backups"
+
+list_backups() {
+    echo "Available backups:"
+    echo ""
+    if [ -d "$BACKUP_DIR" ] && [ "$(ls -A $BACKUP_DIR 2>/dev/null)" ]; then
+        for d in $(ls -1d "$BACKUP_DIR"/*/ 2>/dev/null | sort -r); do
+            TS=$(basename "$d")
+            HASH=""
+            [ -f "$d/git-hash.txt" ] && HASH=$(cat "$d/git-hash.txt" | cut -c1-7)
+            echo "  $TS  (git: ${HASH:-unknown})"
+        done
+    else
+        echo "  (no backups found)"
+    fi
+    echo ""
+    echo "Usage: dragonpi-rollback 20260618-120000"
+}
+
+if [ -z "$1" ]; then
+    list_backups
+    exit 0
+fi
+
+RESTORE="$BACKUP_DIR/$1"
+if [ ! -d "$RESTORE" ]; then
+    echo "✗ Backup '$1' not found"
+    list_backups
+    exit 1
+fi
+
+echo "🐉 DragonPi Rollback"
+echo "===================="
+echo "Restoring from: $1"
+echo ""
+
+# Restore files from backup
+restore() {
+    local src="$RESTORE$1"
+    local dst="$1"
+    if [ -f "$src" ]; then
+        sudo cp "$src" "$dst"
+        echo "  ✓ $dst"
+    fi
+}
+
+restore /var/www/homer/assets/config.yml
+restore /var/www/homer/index.html
+restore /opt/dragonpi/chatbot/app.py
+restore /opt/dragonpi/chatbot/templates/index.html
+restore /etc/nginx/sites-available/dragonpi.conf
+restore /etc/systemd/system/chatbot.service
+restore /etc/systemd/system/ttyd.service
+
+# Restore guides
+if ls "$RESTORE/usr/local/bin/dragonpi-guide-"* >/dev/null 2>&1; then
+    sudo cp "$RESTORE/usr/local/bin/dragonpi-guide-"* /usr/local/bin/ 2>/dev/null
+    sudo cp "$RESTORE/usr/local/bin/dragonpi-shell" /usr/local/bin/ 2>/dev/null
+    sudo cp "$RESTORE/usr/local/bin/dragonpi-update" /usr/local/bin/ 2>/dev/null
+    sudo chmod +x /usr/local/bin/dragonpi-*
+    echo "  ✓ Guides & scripts restored"
+fi
+
+# Git rollback
+if [ -f "$RESTORE/git-hash.txt" ]; then
+    HASH=$(cat "$RESTORE/git-hash.txt")
+    cd /opt/dragonpi
+    sudo git reset --hard "$HASH" 2>/dev/null
+    echo "  ✓ Git rolled back to $HASH"
+fi
+
+# Reload
+sudo nginx -t 2>/dev/null && sudo systemctl reload nginx
+sudo systemctl daemon-reload
+sudo systemctl restart chatbot 2>/dev/null || true
+
+echo ""
+echo "✅ Rolled back to backup $1"
+echo "   Restart any other services if needed"
