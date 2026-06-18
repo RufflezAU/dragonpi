@@ -165,7 +165,7 @@ def pentest_subnet():
         subnet = pt.detect_subnet()
         return jsonify({"subnet": subnet})
     except Exception as e:
-        return jsonify({"subnet": "192.168.50.0/24", "error": str(e)})
+        return jsonify({"subnet": "192.168.1.0/24", "error": str(e)})
 
 @app.route('/api/pentest/start', methods=['POST'])
 def pentest_start():
