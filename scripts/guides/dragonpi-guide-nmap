@@ -1,0 +1,17 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔍 Nmap — Network Mapper          ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mQuick Scans:\033[0m"
+echo "  nmap -T4 -F 192.168.1.0/24       # Fast scan of subnet"
+echo "  nmap -sn 192.168.1.0/24           # Ping sweep (find live hosts)"
+echo "  nmap -T4 -A 192.168.1.1           # OS + service + script scan"
+echo "  nmap -T4 -p- 192.168.1.1          # All 65535 ports"
+echo "  nmap --script vuln 192.168.1.1    # Vulnerability scan"
+echo
+echo -e "\033[33mExample - scan your local network:\033[0m"
+echo "  nmap -T4 -F 192.168.50.0/24"
+echo
+echo -e "\033[90m──────────────────────────────────────\033[0m"
+nmap --help 2>&1 | head -40

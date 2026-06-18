@@ -1,0 +1,32 @@
+# DragonPi — credentials & secrets
+*.env
+*.key
+*.pem
+*secret*
+*password*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Tarballs & archives
+*.tar.gz
+*.zip
+*.deb
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log

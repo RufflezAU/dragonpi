@@ -1,0 +1,11 @@
+[Unit]
+Description=DragonPi Daily Update Timer
+Requires=dragonpi-update.service
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=1800
+
+[Install]
+WantedBy=timers.target

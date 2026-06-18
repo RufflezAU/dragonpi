@@ -1,0 +1,20 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔐 John the Ripper — Password Cracker ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mUsage:\033[0m"
+echo "  john hash.txt"
+echo "  john --wordlist=rockyou.txt hash.txt"
+echo "  john --show hash.txt"
+echo
+echo -e "\033[33mCommon flags:\033[0m"
+echo "  --wordlist=FILE   Use wordlist"
+echo "  --show            Show cracked passwords"
+echo "  --format=raw-md5  Specify hash format"
+echo "  --rules           Enable word mangling rules"
+echo
+echo -e "\033[33mExample:\033[0m"
+echo "  john --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt"
+echo
+echo -e "\033[90m──────────────────────────────────────\033[0m"

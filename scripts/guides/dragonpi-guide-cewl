@@ -1,0 +1,19 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🕸 CeWL — Website Wordlist Gen    ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mGenerate wordlist from website:\033[0m"
+echo "  cewl http://target.com -w words.txt"
+echo "  cewl -d 3 -m 6 http://target.com -w deep.txt"
+echo
+echo -e "\033[33mCommon flags:\033[0m"
+echo "  -d DEPTH   Spider depth (default 2)"
+echo "  -m MIN     Minimum word length"
+echo "  -w FILE    Write to file"
+echo "  -e         Include emails"
+echo "  -c         Show word counts"
+echo
+echo -e "\033[33mExample - build custom wordlist:\033[0m"
+echo "  cewl -d 2 -m 5 -w company-words.txt https://target.com"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

@@ -1,0 +1,20 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  💉 SQLmap — SQL Injection Tool    ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mBasic Usage:\033[0m"
+echo "  sqlmap -u \"http://target.com/page?id=1\""
+echo "  sqlmap -u \"http://target.com/page?id=1\" --dbs"
+echo "  sqlmap -u \"http://target.com/page?id=1\" -D dbname --tables"
+echo "  sqlmap -u \"http://target.com/page?id=1\" -D dbname -T users --dump"
+echo
+echo -e "\033[33mCommon flags:\033[0m"
+echo "  --dbs            List databases"
+echo "  --tables         List tables"
+echo "  --dump           Dump table contents"
+echo "  --batch          Non-interactive mode"
+echo "  --risk=3         Max risk level"
+echo "  --level=5        Max test level"
+echo
+echo -e "\033[90m──────────────────────────────────────\033[0m"

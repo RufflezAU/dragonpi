@@ -1,0 +1,18 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🌐 Amass — DNS Enumeration (OWASP)║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mEnumerate subdomains:\033[0m"
+echo "  amass enum -d target.com"
+echo "  amass enum -d target.com -o results.txt"
+echo
+echo -e "\033[33mCommon flags:\033[0m"
+echo "  -d DOMAIN   Target domain"
+echo "  -o FILE     Output file"
+echo "  -active     Active enumeration"
+echo "  -ip         Show IP addresses"
+echo
+echo -e "\033[33mExample - full enum:\033[0m"
+echo "  amass enum -active -d example.com -o amass-results.txt"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

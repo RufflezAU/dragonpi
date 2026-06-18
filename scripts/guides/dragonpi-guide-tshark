@@ -1,0 +1,19 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🦈 tshark — CLI Packet Analyzer   ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mCapture traffic:\033[0m"
+echo "  sudo tshark -i wlan0"
+echo "  sudo tshark -i wlan0 -w capture.pcap"
+echo "  sudo tshark -i wlan0 -f \"port 80\""
+echo
+echo -e "\033[33mRead a capture:\033[0m"
+echo "  tshark -r capture.pcap"
+echo "  tshark -r capture.pcap -Y \"http\""
+echo "  tshark -r capture.pcap -T fields -e ip.src -e ip.dst"
+echo
+echo -e "\033[33mExample - capture HTTP traffic:\033[0m"
+echo "  sudo tshark -i wlan0 -f \"tcp port 80\" -w http-capture.pcap"
+echo
+echo -e "\033[90m──────────────────────────────────────\033[0m"

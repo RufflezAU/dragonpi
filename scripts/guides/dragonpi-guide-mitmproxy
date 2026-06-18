@@ -1,0 +1,19 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔀 mitmproxy — HTTPS Interceptor  ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mStart proxy:\033[0m"
+echo "  mitmproxy        # Interactive TUI"
+echo "  mitmweb          # Web interface (port 8081)"
+echo "  mitmdump         # Headless mode"
+echo
+echo -e "\033[33mSetup client:\033[0m"
+echo "  1. Set proxy: 192.168.50.10:8080"
+echo "  2. Install CA cert: http://mitm.it"
+echo
+echo -e "\033[33mExample - intercept & modify traffic:\033[0m"
+echo "  mitmweb --listen-port 8080"
+echo "  # Then browse to http://dragonpi.local:8081 for web UI"
+echo
+echo -e "\033[90m──────────────────────────────────────\033[0m"

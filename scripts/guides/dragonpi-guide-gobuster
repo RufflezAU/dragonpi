@@ -1,0 +1,17 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔨 Gobuster — Directory Brute     ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mQuick Scan:\033[0m"
+echo "  gobuster dir -u http://target.com -w /usr/share/wordlists/dirb/common.txt"
+echo
+echo -e "\033[33mModes:\033[0m"
+echo "  dir     Directory/file enumeration"
+echo "  dns     DNS subdomain enumeration"
+echo "  vhost   Virtual host enumeration"
+echo
+echo -e "\033[33mExample - find hidden directories:\033[0m"
+echo "  gobuster dir -u http://192.168.1.1 -w /usr/share/seclists/Discovery/Web-Content/common.txt -x php,html,txt"
+echo
+echo -e "\033[90m──────────────────────────────────────\033[0m"

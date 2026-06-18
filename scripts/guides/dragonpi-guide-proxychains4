@@ -1,0 +1,20 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  ⛓ Proxychains — Force Through Proxy║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mRun any command through proxy:\033[0m"
+echo "  proxychains4 nmap -sT 10.0.0.1"
+echo "  proxychains4 curl http://target.com"
+echo "  proxychains4 firefox"
+echo
+echo -e "\033[33mConfig:\033[0m"
+echo "  /etc/proxychains4.conf"
+echo "  Add your proxy: socks4 127.0.0.1 9050"
+echo
+echo -e "\033[33mProxy types:\033[0m"
+echo "  socks4, socks5, http"
+echo
+echo -e "\033[33mExample - scan through Tor:\033[0m"
+echo "  proxychains4 nmap -sT -Pn target.com"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

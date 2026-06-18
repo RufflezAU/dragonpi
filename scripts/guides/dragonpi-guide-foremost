@@ -1,0 +1,18 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  💾 Foremost — File Carving        ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mQuick carve:\033[0m"
+echo "  foremost -i image.dd -o /output/dir"
+echo "  foremost -t jpg,pdf,doc -i image.dd -o /output"
+echo
+echo -e "\033[33mCommon flags:\033[0m"
+echo "  -i FILE     Input disk image"
+echo "  -o DIR      Output directory"
+echo "  -t TYPES    File types (jpg,png,pdf,doc,exe,zip,all)"
+echo "  -v          Verbose mode"
+echo
+echo -e "\033[33mExample - recover deleted photos:\033[0m"
+echo "  foremost -t jpg,png -i /dev/sda1 -o ~/recovered"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

@@ -1,0 +1,25 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔐 Hashcat — Password Cracking     ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mBasic crack:\033[0m"
+echo "  hashcat -m 0 -a 0 hash.txt wordlist.txt"
+echo
+echo -e "\033[33mCommon hash modes (-m):\033[0m"
+echo "  0     MD5"
+echo "  100   SHA1"
+echo "  1400  SHA256"
+echo "  1000  NTLM (Windows passwords)"
+echo "  1800  sha512crypt (Linux /etc/shadow)"
+echo
+echo -e "\033[33mAttack modes (-a):\033[0m"
+echo "  0  Straight (wordlist)"
+echo "  1  Combination"
+echo "  3  Brute-force (mask)"
+echo
+echo -e "\033[33mExample - crack NTLM hashes:\033[0m"
+echo "  hashcat -m 1000 -a 0 ntlm.txt /usr/share/wordlists/rockyou.txt"
+echo
+echo -e "\033[33mNote: RPi CPU only - use small wordlists\033[0m"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

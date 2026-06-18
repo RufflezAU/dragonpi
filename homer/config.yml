@@ -1,0 +1,352 @@
+title: 🐉 DragonPi
+subtitle: Cybersecurity Toolkit
+links:
+- name: 🤖 DragonAI Chat
+  icon: fas fa-robot
+  url: http://dragonpi.local/chat
+  target: _blank
+- name: 💻 Web Terminal
+  icon: fas fa-terminal
+  url: http://dragonpi.local:7681
+  target: _blank
+- name: ⚙️ Cockpit
+  icon: fas fa-server
+  url: https://dragonpi.local:9090
+  target: _blank
+- name: GitHub
+  icon: fab fa-github
+  url: https://github.com
+  target: _blank
+- name: ExploitDB
+  icon: fas fa-database
+  url: https://www.exploit-db.com
+  target: _blank
+- name: HackTricks
+  icon: fas fa-book
+  url: https://book.hacktricks.xyz
+  target: _blank
+services:
+- name: 🤖 DragonAI Chatbot
+  icon: fas fa-robot
+  items:
+  - name: DragonAI Chat
+    icon: fas fa-dragon
+    subtitle: OpenCode Go — Run tools, scan, manage via chat
+    tag: AI
+    url: http://dragonpi.local/chat
+    target: _blank
+  - name: Web Terminal
+    icon: fas fa-terminal
+    subtitle: Browser-based shell — all CLI tools launch here
+    tag: WEB
+    url: http://dragonpi.local:7681
+    target: _blank
+  - name: Cockpit
+    icon: fas fa-gauge
+    subtitle: System management — CPU, RAM, logs, services
+    tag: WEB
+    url: https://dragonpi.local:9090
+    target: _blank
+- name: 🔍 Network Scanning
+  icon: fas fa-network-wired
+  items:
+  - name: Nmap
+    icon: fas fa-crosshairs
+    subtitle: The essential network mapper — port scan, OS detect, vuln
+    tag: CLI
+    url: http://dragonpi.local/term/nmap
+  - name: Masscan
+    icon: fas fa-bolt
+    subtitle: Fastest port scanner — scan entire internet in minutes
+    tag: CLI
+    url: http://dragonpi.local/term/masscan
+  - name: Netdiscover
+    icon: fas fa-search
+    subtitle: Active/passive ARP reconnaissance — find live hosts
+    tag: CLI
+    url: http://dragonpi.local/term/netdiscover
+  - name: Amass
+    icon: fas fa-sitemap
+    subtitle: In-depth DNS enumeration & network mapping (OWASP)
+    tag: CLI
+    url: http://dragonpi.local/term/amass
+  - name: Subfinder
+    icon: fas fa-search-plus
+    subtitle: Fast passive subdomain discovery (ProjectDiscovery)
+    tag: CLI
+    url: http://dragonpi.local/term/subfinder
+  - name: TheHarvester
+    icon: fas fa-envelope-open-text
+    subtitle: Email, subdomain & OSINT gathering
+    tag: CLI
+    url: http://dragonpi.local/term/theharvester
+- name: 🌐 Network Analysis
+  icon: fas fa-chart-line
+  items:
+  - name: tcpdump
+    icon: fas fa-microchip
+    subtitle: Classic packet capture & network analysis
+    tag: CLI
+    url: http://dragonpi.local/term/tcpdump
+  - name: tshark
+    icon: fas fa-shield-halved
+    subtitle: Wireshark CLI — deep packet inspection
+    tag: CLI
+    url: http://dragonpi.local/term/tshark
+  - name: Netcat
+    icon: fas fa-plug
+    subtitle: TCP/UDP swiss army knife — read/write network connections
+    tag: CLI
+    url: http://dragonpi.local/term/netcat
+  - name: Socat
+    icon: fas fa-arrows-left-right
+    subtitle: Advanced network relay & bidirectional data transfer
+    tag: CLI
+    url: http://dragonpi.local/term/socat
+- name: 🔓 Password Attacks
+  icon: fas fa-key
+  items:
+  - name: Hashcat
+    icon: fas fa-gavel
+    subtitle: Advanced password recovery — 300+ hash types
+    tag: CLI
+    url: http://dragonpi.local/term/hashcat
+  - name: John the Ripper
+    icon: fas fa-user-lock
+    subtitle: Fast CPU-based password cracker
+    tag: CLI
+    url: http://dragonpi.local/term/john
+  - name: Hydra
+    icon: fas fa-water
+    subtitle: Parallelized network login brute-forcer
+    tag: CLI
+    url: http://dragonpi.local/term/hydra
+  - name: Crunch
+    icon: fas fa-list-ol
+    subtitle: Custom wordlist generator
+    tag: CLI
+    url: http://dragonpi.local/term/crunch
+  - name: CeWL
+    icon: fas fa-file-word
+    subtitle: Custom wordlist from website content scraping
+    tag: CLI
+    url: http://dragonpi.local/term/cewl
+- name: 🪟 Windows / Active Directory
+  icon: fab fa-windows
+  items:
+  - name: Enum4linux
+    icon: fas fa-list-check
+    subtitle: Windows/Samba enumeration — users, shares, policies
+    tag: CLI
+    url: http://dragonpi.local/term/enum4linux
+  - name: SMB Client
+    icon: fas fa-folder-tree
+    subtitle: SMB/CIFS share access & file transfer
+    tag: CLI
+    url: http://dragonpi.local/term/smbclient
+  - name: Impacket (secretsdump)
+    icon: fas fa-skull
+    subtitle: Windows secrets dump — SAM, LSA, NTDS
+    tag: CLI
+    url: http://dragonpi.local/term/secretsdump.py
+  - name: Certipy
+    icon: fas fa-certificate
+    subtitle: Active Directory Certificate Services exploitation
+    tag: CLI
+    url: http://dragonpi.local/term/certipy
+  - name: BloodHound.py
+    icon: fas fa-dog
+    subtitle: Active Directory attack path analysis (Python collector)
+    tag: CLI
+    url: http://dragonpi.local/term/bloodhound-python
+  - name: Coercer
+    icon: fas fa-bullhorn
+    subtitle: Authentication coercion — PetitPotam, PrinterBug, etc.
+    tag: CLI
+    url: http://dragonpi.local/term/coercer
+- name: 🌊 Web Application
+  icon: fas fa-globe
+  items:
+  - name: Gobuster
+    icon: fas fa-hammer
+    subtitle: Fast directory/DNS/VHost brute-forcer (Go)
+    tag: CLI
+    url: http://dragonpi.local/term/gobuster
+  - name: ffuf
+    icon: fas fa-bomb
+    subtitle: Fast web fuzzer written in Go
+    tag: CLI
+    url: http://dragonpi.local/term/ffuf
+  - name: Wfuzz
+    icon: fas fa-fire
+    subtitle: Web application brute-forcer — params, dirs, auth
+    tag: CLI
+    url: http://dragonpi.local/term/wfuzz
+  - name: Dirb
+    icon: fas fa-folder-open
+    subtitle: Classic web content scanner
+    tag: CLI
+    url: http://dragonpi.local/term/dirb
+  - name: WhatWeb
+    icon: fas fa-fingerprint
+    subtitle: Website technology fingerprinting
+    tag: CLI
+    url: http://dragonpi.local/term/whatweb
+  - name: Wafw00f
+    icon: fas fa-shield
+    subtitle: Web application firewall detection
+    tag: CLI
+    url: http://dragonpi.local/term/wafw00f
+- name: 🔀 MITM & Tunneling
+  icon: fas fa-user-secret
+  items:
+  - name: Mitmproxy
+    icon: fas fa-arrows-up-down
+    subtitle: Interactive HTTPS proxy — intercept, modify, replay
+    tag: CLI
+    url: http://dragonpi.local/term/mitmproxy
+  - name: Ettercap
+    icon: fas fa-spider
+    subtitle: MITM attacks — ARP poisoning, sniffing, filtering
+    tag: CLI
+    url: http://dragonpi.local/term/ettercap
+  - name: Chisel
+    icon: fas fa-drill
+    subtitle: Fast TCP/UDP tunnel over HTTP (Go)
+    tag: CLI
+    url: http://dragonpi.local/term/chisel
+  - name: SSHuttle
+    icon: fas fa-shuttle-space
+    subtitle: Transparent proxy VPN over SSH
+    tag: CLI
+    url: http://dragonpi.local/term/sshuttle
+  - name: Proxychains4
+    icon: fas fa-link
+    subtitle: Force any TCP connection through proxy chain
+    tag: CLI
+    url: http://dragonpi.local/term/proxychains4
+- name: 🔬 Forensics
+  icon: fas fa-magnifying-glass
+  items:
+  - name: Autopsy (Web UI)
+    icon: fas fa-search-plus
+    subtitle: Full forensic browser — web interface on port 9999
+    tag: WEB
+    url: http://dragonpi.local:9999/autopsy
+    target: _blank
+  - name: Binwalk
+    icon: fas fa-microscope
+    subtitle: Firmware analysis, extraction & entropy scanning
+    tag: CLI
+    url: http://dragonpi.local/term/binwalk
+  - name: Foremost
+    icon: fas fa-file-import
+    subtitle: File carving & data recovery
+    tag: CLI
+    url: http://dragonpi.local/term/foremost
+  - name: ExifTool
+    icon: fas fa-image
+    subtitle: Read, write & edit file metadata
+    tag: CLI
+    url: http://dragonpi.local/term/exiftool
+  - name: Steghide
+    icon: fas fa-mask
+    subtitle: Steganography — hide & extract data in images/audio
+    tag: CLI
+    url: http://dragonpi.local/term/steghide
+  - name: dc3dd (Imaging)
+    icon: fas fa-clone
+    subtitle: Forensic disk imaging — patched dd replacement
+    tag: CLI
+    url: http://dragonpi.local/term/dc3dd
+    target: _self
+- name: 📡 Wireless
+  icon: fas fa-wifi
+  items:
+  - name: Aircrack-ng
+    icon: fas fa-unlock-keyhole
+    subtitle: Complete WiFi security auditing suite
+    tag: CLI
+    url: http://dragonpi.local/term/aircrack-ng
+    target: _self
+  - name: Wifite
+    icon: fas fa-wifi
+    subtitle: Automated wireless auditing — WEP/WPA/WPS
+    tag: CLI
+    url: http://dragonpi.local/term/wifite
+    target: _self
+  - name: Reaver
+    icon: fas fa-key
+    subtitle: Brute force attack against WPS PINs
+    tag: CLI
+    url: http://dragonpi.local/term/reaver
+    target: _self
+  - name: PixieWPS
+    icon: fas fa-bolt
+    subtitle: Offline WPS PIN brute-force tool
+    tag: CLI
+    url: http://dragonpi.local/term/pixiewps
+    target: _self
+  - name: hcxdumptool
+    icon: fas fa-download
+    subtitle: Capture packets from wlan devices
+    tag: CLI
+    url: http://dragonpi.local/term/hcxdumptool
+    target: _self
+  - name: hcxtools
+    icon: fas fa-exchange-alt
+    subtitle: Convert captures for hashcat/John cracking
+    tag: CLI
+    url: http://dragonpi.local/term/hcxtools
+    target: _self
+  - name: Horst
+    icon: fas fa-signal
+    subtitle: Highly Optimized Radio Scanning Tool
+    tag: CLI
+    url: http://dragonpi.local/term/horst
+    target: _self
+  - name: airbase-ng (Rogue AP)
+    icon: fas fa-broadcast-tower
+    subtitle: Create fake access points — Evil Twin / MITM attacks
+    tag: CLI
+    url: http://dragonpi.local/term/airbase-ng
+    target: _self
+- name: 🎙️ Cyber Podcasts & News
+  icon: fas fa-podcast
+  items:
+  - name: Risky Biz
+    icon: fas fa-broadcast-tower
+    subtitle: Weekly cybersecurity news & analysis
+    tag: PODCAST
+    url: https://risky.biz
+    target: _blank
+  - name: Darknet Diaries
+    icon: fas fa-skull
+    subtitle: True stories from the dark side of the internet
+    tag: PODCAST
+    url: https://darknetdiaries.com
+    target: _blank
+  - name: Smashing Security
+    icon: fas fa-shield-halved
+    subtitle: Cybersecurity comedy & news
+    tag: PODCAST
+    url: https://www.smashingsecurity.com
+    target: _blank
+  - name: Krebs on Security
+    icon: fas fa-blog
+    subtitle: Investigative security journalism
+    tag: NEWS
+    url: https://krebsonsecurity.com
+    target: _blank
+  - name: The Hacker News
+    icon: fas fa-newspaper
+    subtitle: Top cybersecurity news source
+    tag: NEWS
+    url: https://thehackernews.com
+    target: _blank
+  - name: BleepingComputer
+    icon: fas fa-desktop
+    subtitle: Security news, malware & virus removal
+    tag: NEWS
+    url: https://www.bleepingcomputer.com
+    target: _blank

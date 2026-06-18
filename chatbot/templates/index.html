@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DragonAI — OpenCode Go | DragonPi</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+  --bg:     #0a0d0b;
+  --bg2:    #0f1411;
+  --bg3:    #151c17;
+  --border: #1a281f;
+  --text:   #c8d6cc;
+  --text2:  #6b8a74;
+  --green:  #4ade80;
+  --green2: #22c55e;
+  --amber:  #f59e0b;
+  --red:    #ef4444;
+  --cyan:   #22d3ee;
+  --font:   'SF Mono','Fira Code','JetBrains Mono','Consolas',monospace;
+  --radius: 6px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);
+  background-image:linear-gradient(rgba(74,222,128,0.012) 1px,transparent 1px);
+  background-size:100% 3px;
+  color:var(--text);
+  font-family:var(--font);
+  font-size:14px;
+  height:100vh;display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* Header — terminal title bar style */
+.header{
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:8px 18px;
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+  -webkit-app-region:drag;
+}
+.header .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.header .dot.r{background:#ef4444}
+.header .dot.y{background:#f59e0b}
+.header .dot.g{background:#22c55e}
+.header .title{
+  color:var(--text2);font-size:0.8em;
+  letter-spacing:0.04em;margin-left:6px;
+}
+.header .title span{color:var(--green);font-weight:600}
+.header-right{margin-left:auto;display:flex;gap:6px;align-items:center}
+.header-right button{
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);padding:5px 10px;border-radius:var(--radius);
+  cursor:pointer;font-size:0.75em;font-family:var(--font);
+  transition:all 0.15s;
+}
+.header-right button:hover{background:var(--border);color:var(--green);border-color:#2a4a32}
+
+/* Chat area */
+.chat-container{
+  flex:1;overflow-y:auto;padding:20px;
+  display:flex;flex-direction:column;gap:14px;
+  scroll-behavior:smooth;
+}
+.chat-container::-webkit-scrollbar{width:5px}
+.chat-container::-webkit-scrollbar-track{background:var(--bg)}
+.chat-container::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* Messages */
+.message{display:flex;gap:10px;max-width:82%;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.message.user{align-self:flex-end;flex-direction:row-reverse}
+.message.assistant{align-self:flex-start}
+.prompt{
+  color:var(--green);font-weight:700;font-size:0.8em;
+  flex-shrink:0;margin-top:4px;opacity:0.7;
+}
+.message.user .prompt{color:var(--amber)}
+
+.bubble{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:10px 14px;
+  line-height:1.55;word-break:break-word;overflow-x:auto;
+}
+.message.user .bubble{
+  background:#1a2418;border-color:#1e3a20;
+}
+.bubble pre{
+  background:#080b09;padding:10px;border-radius:4px;
+  overflow-x:auto;margin:6px 0;font-size:0.82em;
+  border:1px solid var(--border);position:relative;
+}
+.bubble pre .copy-btn{
+  position:absolute;top:5px;right:6px;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);padding:1px 7px;border-radius:3px;
+  cursor:pointer;font-size:0.7em;
+}
+.bubble code{
+  background:#080b09;padding:1px 4px;border-radius:2px;
+  font-size:0.85em;border:1px solid var(--border);
+  color:var(--green);
+}
+.bubble a{color:var(--green);text-decoration:none}
+.bubble a:hover{text-decoration:underline}
+.bubble ul,.bubble ol{margin:4px 0;padding-left:18px}
+.bubble table{border-collapse:collapse;margin:8px 0;width:100%;font-size:0.82em}
+.bubble th,.bubble td{border:1px solid var(--border);padding:4px 8px;text-align:left}
+.bubble th{background:var(--bg3);color:var(--green);font-weight:600}
+
+/* Status / thinking indicator */
+.status-banner{
+  background:var(--bg3);border:1px solid var(--border);
+  padding:8px 14px;border-radius:var(--radius);
+  font-size:0.8em;color:var(--text2);
+  display:flex;align-items:center;gap:8px;
+}
+.status-banner .spinner{
+  width:12px;height:12px;border:2px solid var(--border);
+  border-top-color:var(--green);border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Welcome screen */
+.welcome{text-align:center;padding:30px 20px;color:var(--text2)}
+.welcome .logo{font-size:3.5em;margin-bottom:12px}
+.welcome h2{color:var(--text);font-size:1.2em;margin-bottom:6px;font-weight:600}
+.welcome .suggestions{
+  display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:16px;
+}
+.welcome .suggestion{
+  background:var(--bg3);border:1px solid var(--border);
+  padding:6px 14px;border-radius:16px;
+  cursor:pointer;font-size:0.8em;transition:all 0.2s;
+  white-space:nowrap;
+}
+.welcome .suggestion:hover{background:var(--border);border-color:var(--green);color:var(--green)}
+
+/* Input area */
+.input-area{
+  background:var(--bg2);border-top:1px solid var(--border);
+  padding:10px 18px;flex-shrink:0;
+}
+.input-row{display:flex;gap:8px;align-items:flex-end}
+.input-row textarea{
+  flex:1;background:var(--bg);border:1px solid var(--border);
+  color:var(--text);padding:8px 12px;border-radius:var(--radius);
+  resize:none;font-family:var(--font);font-size:0.85em;
+  line-height:1.4;min-height:40px;max-height:130px;
+  outline:none;transition:border-color 0.2s;
+}
+.input-row textarea:focus{border-color:#2a4a32;box-shadow:0 0 0 2px rgba(74,222,128,0.1)}
+.input-row textarea::placeholder{color:var(--text2)}
+.input-row button{
+  background:var(--green);color:#0a0d0b;border:none;
+  padding:8px 16px;border-radius:var(--radius);
+  cursor:pointer;font-size:0.8em;font-weight:700;
+  font-family:var(--font);transition:all 0.2s;
+  white-space:nowrap;
+}
+.input-row button:hover{background:var(--green2)}
+.input-row button:disabled{background:var(--bg3);color:var(--text2);cursor:not-allowed}
+.input-hint{font-size:0.65em;color:var(--text2);margin-top:4px;display:flex;gap:14px}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:74px;right:16px;
+  background:var(--green);color:#0a0d0b;
+  padding:8px 16px;border-radius:var(--radius);
+  font-size:0.8em;z-index:200;font-weight:600;
+  animation:slideIn .3s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+  <span class="title"><span>dragonai</span>@dragonpi:~ — OpenCode Go</span>
+  <div class="header-right">
+    <button onclick="clearChat()"><i class="fas fa-trash"></i> clear</button>
+    <button onclick="newSession()"><i class="fas fa-plus"></i> new</button>
+    <a href="/" style="text-decoration:none"><button><i class="fas fa-th"></i> dashboard</button></a>
+  </div>
+</div>
+
+<!-- Chat -->
+<div class="chat-container" id="chatContainer">
+  <div class="welcome" id="welcomeMessage">
+    <div class="logo">🐉</div>
+    <h2>DragonAI Terminal</h2>
+    <p style="color:var(--text2);font-size:0.85em">OpenCode Go + DeepSeek V4 Pro. Ask me to run tools, scan networks, or manage your DragonPi.</p>
+    <div class="suggestions">
+      <div class="suggestion" onclick="sendSuggestion('Run an nmap scan of my local network')">🔍 nmap scan</div>
+      <div class="suggestion" onclick="sendSuggestion('Show system status')">📊 system</div>
+      <div class="suggestion" onclick="sendSuggestion('What web testing tools are installed?')">🌐 web tools</div>
+      <div class="suggestion" onclick="sendSuggestion('Add a dashboard card for wireshark')">➕ dashboard</div>
+      <div class="suggestion" onclick="sendSuggestion('List all AD exploitation tools available')">🪟 AD tools</div>
+      <div class="suggestion" onclick="sendSuggestion('Are all DragonPi services running?')">⚙️ services</div>
+    </div>
+  </div>
+</div>
+
+<!-- Input -->
+<div class="input-area">
+  <div class="input-row">
+    <textarea id="userInput" rows="1" placeholder="dragonai@dragonpi:~$ _"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"></textarea>
+    <button id="sendBtn" onclick="sendMessage()">▶ run</button>
+  </div>
+  <div class="input-hint">
+    <span>🔧 runs tools</span><span>📝 edits dashboard</span><span>📦 installs software</span>
+  </div>
+</div>
+
+<script>
+let chatHistory=[],isProcessing=false;
+
+document.getElementById('userInput').addEventListener('input',function(){
+  this.style.height='auto';this.style.height=Math.min(this.scrollHeight,130)+'px';
+});
+
+function sendSuggestion(text){document.getElementById('userInput').value=text;sendMessage();}
+
+function clearChat(){
+  chatHistory=[];
+  document.getElementById('chatContainer').innerHTML=`
+    <div class="welcome" id="welcomeMessage">
+      <div class="logo">🐉</div>
+      <h2>DragonAI Terminal</h2>
+      <p style="color:var(--text2);font-size:0.85em">OpenCode Go + DeepSeek V4 Pro</p>
+      <div class="suggestions">
+        <div class="suggestion" onclick="sendSuggestion('Run an nmap scan of my local network')">🔍 nmap scan</div>
+        <div class="suggestion" onclick="sendSuggestion('Show system status')">📊 system</div>
+        <div class="suggestion" onclick="sendSuggestion('What web testing tools are installed?')">🌐 web tools</div>
+        <div class="suggestion" onclick="sendSuggestion('Add a dashboard card for wireshark')">➕ dashboard</div>
+        <div class="suggestion" onclick="sendSuggestion('List all AD exploitation tools available')">🪟 AD tools</div>
+        <div class="suggestion" onclick="sendSuggestion('Are all DragonPi services running?')">⚙️ services</div>
+      </div>
+    </div>`;
+}
+
+async function sendMessage(){
+  if(isProcessing)return;
+  const input=document.getElementById('userInput');
+  const message=input.value.trim();
+  if(!message)return;
+
+  isProcessing=true;
+  document.getElementById('sendBtn').disabled=true;
+  input.value='';input.style.height='auto';
+
+  const welcome=document.getElementById('welcomeMessage');
+  if(welcome)welcome.remove();
+
+  addMessage('user',message);
+  chatHistory.push({role:'user',content:message});
+
+  const assistantDiv=addMessage('assistant','');
+  const bubble=assistantDiv.querySelector('.bubble');
+  bubble.innerHTML='<div class="status-banner"><div class="spinner"></div> thinking...</div>';
+
+  try{
+    const response=await fetch('/chat/message',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message})
+    });
+    const data=await response.json();
+    if(data.error){
+      bubble.innerHTML=`<span style="color:var(--red)">✗ error:</span> ${esc(data.error)}`;
+    }else if(data.text){
+      bubble.innerHTML=renderMarkdown(data.text);
+      chatHistory.push({role:'assistant',content:data.text});
+    }else{
+      bubble.innerHTML='<span style="color:var(--red)">✗ no response</span>';
+    }
+  }catch(error){
+    bubble.innerHTML=`<span style="color:var(--red)">✗ connection error:</span> ${esc(error.message)}`;
+  }
+
+  isProcessing=false;
+  document.getElementById('sendBtn').disabled=false;
+  document.getElementById('chatContainer').scrollTop=document.getElementById('chatContainer').scrollHeight;
+}
+
+function addMessage(role,content){
+  const container=document.getElementById('chatContainer');
+  const div=document.createElement('div');
+  div.className='message '+role;
+  const promptText=role==='user'?'root@dragonpi:~#':'dragonai ~>';
+  div.innerHTML=`
+    <div class="prompt">${promptText}</div>
+    <div class="bubble">${content?renderMarkdown(content):''}</div>`;
+  container.appendChild(div);
+  container.scrollTop=container.scrollHeight;
+  return div;
+}
+
+function renderMarkdown(text){
+  if(!text)return'';
+  let html=esc(text);
+
+  // Code blocks
+  html=html.replace(/```(\w*)\n([\s\S]*?)```/g,(_,lang,code)=>
+    `<pre><span class="copy-btn" onclick="copyCode(this)">copy</span><code>${esc(code.trim())}</code></pre>`);
+
+  // Inline code
+  html=html.replace(/`([^`]+)`/g,'<code>$1</code>');
+
+  // Bold / italic
+  html=html.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  html=html.replace(/\*(.+?)\*/g,'<em>$1</em>');
+
+  // Links
+  html=html.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
+
+  // Headers
+  html=html.replace(/^### (.+)$/gm,'<strong style="color:var(--green)">$1</strong>');
+  html=html.replace(/^## (.+)$/gm,'<h3 style="color:var(--green);margin:8px 0 4px">$1</h3>');
+  html=html.replace(/^# (.+)$/gm,'<h2 style="color:var(--green);margin:10px 0 4px">$1</h2>');
+
+  // Lists
+  html=html.replace(/^- (.+)$/gm,'<li>$1</li>');
+  html=html.replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>');
+  html=html.replace(/^\d+\. (.+)$/gm,'<li>$1</li>');
+
+  // Tables
+  html=html.replace(/((?:^\|.+\|$\n?)+)/gm,(block)=>{
+    const rows=block.trim().split('\n');
+    let t='<table>';
+    let hd=false;
+    for(let i=0;i<rows.length;i++){
+      const row=rows[i].trim();
+      if(!row.startsWith('|'))continue;
+      const cells=row.split('|').filter(c=>c.trim());
+      if(cells.every(c=>/^:?-{3,}:?$/.test(c.trim())))continue;
+      const tag=(!hd&&i<rows.length-1)?'th':'td';
+      if(tag==='th')hd=true;
+      t+='<tr>'+cells.map(c=>`<${tag}>${c.trim()}</${tag}>`).join('')+'</tr>';
+    }
+    t+='</table>';
+    return t;
+  });
+
+  html=html.replace(/\n\n/g,'<br><br>');
+  html=html.replace(/\n/g,'<br>');
+  return html;
+}
+
+function esc(text){const d=document.createElement('div');d.textContent=text;return d.innerHTML;}
+
+function copyCode(btn){
+  const pre=btn.parentElement;
+  const code=pre.querySelector('code')||pre;
+  navigator.clipboard.writeText(code.textContent).then(()=>{
+    btn.textContent='copied!';setTimeout(()=>btn.textContent='copy',1800);
+  });
+}
+
+async function newSession(){
+  try{await fetch('/new-session',{method:'POST'});showToast('+ new session');}catch(e){}
+}
+
+function showToast(msg){
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
+}
+
+document.getElementById('userInput').focus();
+</script>
+</body>
+</html>

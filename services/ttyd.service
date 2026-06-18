@@ -1,0 +1,13 @@
+[Unit]
+Description=ttyd Web Terminal
+After=network.target
+
+[Service]
+Type=simple
+User=dragonpi
+ExecStart=/usr/local/bin/ttyd -p 7681 -W /usr/local/bin/dragonpi-shell
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

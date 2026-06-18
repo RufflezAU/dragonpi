@@ -1,0 +1,22 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  📷 ExifTool — Metadata Reader     ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mRead metadata:\033[0m"
+echo "  exiftool photo.jpg"
+echo "  exiftool -a -u -g1 photo.jpg    # All metadata"
+echo
+echo -e "\033[33mWrite metadata:\033[0m"
+echo "  exiftool -Artist=\"Me\" photo.jpg"
+echo "  exiftool -GPSLatitude=37.7749 -GPSLongitude=-122.4194 photo.jpg"
+echo
+echo -e "\033[33mUseful flags:\033[0m"
+echo "  -a     Show ALL tags"
+echo "  -g1    Organize by group"
+echo "  -r     Recursive (directories)"
+echo "  -csv   CSV output"
+echo
+echo -e "\033[33mExample - extract GPS from photos:\033[0m"
+echo "  exiftool -r -GPS* ~/Photos/ | grep GPS"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

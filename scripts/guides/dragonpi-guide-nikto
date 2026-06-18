@@ -1,0 +1,21 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🌐 Nikto — Web Server Scanner     ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mQuick Scan:\033[0m"
+echo "  nikto -h http://192.168.1.1"
+echo "  nikto -h https://target.com -ssl"
+echo "  nikto -h 192.168.1.1 -p 8080"
+echo
+echo -e "\033[33mUseful flags:\033[0m"
+echo "  -h HOST       Target host/URL"
+echo "  -p PORT       Specify port"
+echo "  -ssl          Force SSL"
+echo "  -o FILE       Output to file"
+echo "  -Format html  HTML report"
+echo
+echo -e "\033[33mExample - scan a web server:\033[0m"
+echo "  nikto -h http://192.168.1.1 -o scan.html -Format html"
+echo
+echo -e "\033[90m──────────────────────────────────────\033[0m"

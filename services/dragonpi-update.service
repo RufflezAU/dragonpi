@@ -1,0 +1,10 @@
+[Unit]
+Description=DragonPi Daily Auto-Update
+After=network.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/dragonpi-update
+StandardOutput=journal
+StandardError=journal

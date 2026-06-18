@@ -1,0 +1,20 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔩 Chisel — TCP Tunnel over HTTP  ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mServer (DragonPi):\033[0m"
+echo "  chisel server -p 8000 --reverse"
+echo
+echo -e "\033[33mClient (target):\033[0m"
+echo "  chisel client dragonpi.local:8000 R:3389:127.0.0.1:3389"
+echo
+echo -e "\033[33mPort forwarding:\033[0m"
+echo "  # Server: chisel server -p 8000 --reverse"
+echo "  # Client: chisel client SERVER:8000 R:LPORT:TARGET:RPORT"
+echo
+echo -e "\033[33mExample - tunnel RDP:\033[0m"
+echo "  # On DragonPi: chisel server -p 8000 --reverse"
+echo "  # On target:   chisel client dragonpi.local:8000 R:33389:127.0.0.1:3389"
+echo "  # Connect:     rdesktop localhost:33389"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

@@ -1,0 +1,18 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  💿 dc3dd — Forensic Disk Imager   ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mImage a disk:\033[0m"
+echo "  sudo dc3dd if=/dev/sda of=evidence.dd hash=sha256 log=audit.log"
+echo
+echo -e "\033[33mCommon flags:\033[0m"
+echo "  if=FILE    Input file/device"
+echo "  of=FILE    Output image file"
+echo "  hash=ALG   Hash algorithm (sha256, md5)"
+echo "  log=FILE   Audit log"
+echo "  verb=on    Progress output"
+echo
+echo -e "\033[33mExample - forensic disk clone:\033[0m"
+echo "  sudo dc3dd if=/dev/sda1 of=clone.dd hash=sha256 log=chain-of-custody.log"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

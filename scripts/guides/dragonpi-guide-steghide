@@ -1,0 +1,21 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🎭 Steghide — Steganography       ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mHide data in an image:\033[0m"
+echo "  steghide embed -cf image.jpg -ef secret.txt"
+echo
+echo -e "\033[33mExtract hidden data:\033[0m"
+echo "  steghide extract -sf image.jpg -xf output.txt"
+echo
+echo -e "\033[33mCommon flags:\033[0m"
+echo "  -cf    Cover file (image/audio)"
+echo "  -ef    Embed file (data to hide)"
+echo "  -sf    Stego file (to extract from)"
+echo "  -xf    Extract to file"
+echo "  -p     Password"
+echo
+echo -e "\033[33mExample - hide a message in a photo:\033[0m"
+echo "  steghide embed -cf beach.jpg -ef message.txt -p mypass"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

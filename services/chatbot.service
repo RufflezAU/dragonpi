@@ -1,0 +1,18 @@
+[Unit]
+Description=DragonAI Chatbot — Powered by OpenCode Go
+Documentation=https://dragonpi.local/chat
+After=network.target nginx.service
+
+[Service]
+Type=simple
+User=dragonpi
+WorkingDirectory=/opt/dragonpi/chatbot
+Environment=PORT=5000
+Environment=OPENCODE_BIN=/home/dragonpi/.opencode/bin/opencode
+Environment=OPENCODE_MODEL=opencode-go/deepseek-v4-pro
+ExecStart=/usr/bin/python3 app.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
