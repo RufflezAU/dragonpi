@@ -1,0 +1,36 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  📁 Smbclient — SMB/CIFS Share Access║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Interactive FTP-like client for SMB"
+echo "  shares. List + browse + download + upload files on Windows"
+echo "  shares and Samba servers. The go-to for: grabbing files off"
+echo "  an open share, testing credentials, or pivoting file exfil"
+echo "  through SMB (port 445) when other paths are blocked."
+echo
+echo -e "\033[33mList shares on a host:\033[0m"
+echo "  smbclient -L //192.168.50.20 -N          # null session (no auth)"
+echo "  smbclient -L //192.168.50.20 -U admin    # with username"
+echo
+echo -e "\033[33mConnect to a share:\033[0m"
+echo "  smbclient //192.168.50.20/share -U admin"
+echo "  smbclient //192.168.50.20/share -N        # null session"
+echo
+echo -e "\033[33mOnce connected (FTP-style commands):\033[0m"
+echo "  ls                  # list files"
+echo "  cd folder           # change dir"
+echo "  get file.txt        # download"
+echo "  put file.txt        # upload"
+echo "  mget *.docx         # download many (prompts — use 'prompt' to toggle)"
+echo "  del file.txt        # delete"
+echo "  exit                # disconnect"
+echo
+echo -e "\033[33mOne-liner download (no interactive shell):\033[0m"
+echo "  smbclient //192.168.50.20/share -N -c 'get secrets.txt /tmp/secrets.txt'"
+echo
+echo -e "\033[33mSpecify workgroup / version:\033[0m"
+echo "  smbclient //192.168.50.20/share -W CORP -U admin --option='client min protocol=SMB2'"
+echo
+echo -e "\033[33mKey flags:\033[0m  -L list · -N null session · -U user · -W workgroup · -c 'cmd'"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

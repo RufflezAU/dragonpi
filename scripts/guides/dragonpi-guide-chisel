@@ -3,6 +3,13 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🔩 Chisel — TCP Tunnel over HTTP  ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Creates TCP/UDP tunnels over HTTP — bypasses"
+echo "  firewalls and proxies that block SSH/VPN. Single binary, no deps."
+echo "  Perfect for pivoting out of a restricted network: run the client on"
+echo "  a compromised host inside the target network, connect back to your"
+echo "  chisel server, and now you have a tunnel to reach internal services."
+echo "  Exfiltrate data or chain into deeper networks."
+echo
 echo -e "\033[33mServer (DragonPi):\033[0m"
 echo "  chisel server -p 8000 --reverse"
 echo

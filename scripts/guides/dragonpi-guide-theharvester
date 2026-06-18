@@ -3,6 +3,12 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🔍 theHarvester — OSINT Gathering ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Gathers emails, subdomains, employee names,"
+echo "  and host info from public sources (Google, LinkedIn, Bing, etc)."
+echo "  The first step in OSINT/recon — finds the email addresses you'll"
+echo "  use for phishing, the subdomains to target, and the names for"
+echo "  social engineering. Free, fast, and covers dozens of sources."
+echo
 echo -e "\033[33mUsage:\033[0m"
 echo "  theHarvester -d domain.com -b google"
 echo "  theHarvester -d company.com -b all"

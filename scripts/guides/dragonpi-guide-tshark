@@ -3,6 +3,13 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🦈 tshark — CLI Packet Analyzer   ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Wireshark's command-line engine — captures and"
+echo "  dissects network packets at every protocol layer. Sees everything"
+echo "  on the wire: credentials, files, DNS queries, SMB traffic. More"
+echo "  powerful than tcpdump (3000+ protocol dissectors). Use it for"
+echo "  deep packet analysis, credential extraction from captures, and"
+echo "  troubleshooting network attacks."
+echo
 echo -e "\033[33mCapture traffic:\033[0m"
 echo "  sudo tshark -i wlan0"
 echo "  sudo tshark -i wlan0 -w capture.pcap"
@@ -13,7 +20,9 @@ echo "  tshark -r capture.pcap"
 echo "  tshark -r capture.pcap -Y \"http\""
 echo "  tshark -r capture.pcap -T fields -e ip.src -e ip.dst"
 echo
+echo -e "\033[33mExtract credentials from capture:\033[0m"
+echo "  tshark -r capture.pcap -Y \"http.request.method==POST\" -T fields -e http.file_data"
+echo
 echo -e "\033[33mExample - capture HTTP traffic:\033[0m"
 echo "  sudo tshark -i wlan0 -f \"tcp port 80\" -w http-capture.pcap"
-echo
 echo -e "\033[90m──────────────────────────────────────\033[0m"

@@ -1,18 +1,29 @@
 #!/bin/bash
 echo -e "\033[32m╔══════════════════════════════════════╗"
-echo -e "║  💾 Foremost — File Carving        ║"
+echo -e "║  💾 Foremost — File Carving & Recovery║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
-echo -e "\033[33mQuick carve:\033[0m"
+echo -e "\033[33mWhy use it:\033[0m Recover deleted files from disk images,"
+echo "  memory dumps, or raw partitions. Foremost carves files by their"
+echo "  headers/footers — even if the filesystem is damaged or the file"
+echo "  was deleted. Used in forensics to pull photos, docs, and executables"
+echo "  out of evidence images when the filesystem can't help."
+echo
+echo -e "\033[33mQuick carve (all file types):\033[0m"
 echo "  foremost -i image.dd -o /output/dir"
-echo "  foremost -t jpg,pdf,doc -i image.dd -o /output"
+echo "  foremost -i /dev/sda1 -o ~/recovered"
 echo
-echo -e "\033[33mCommon flags:\033[0m"
-echo "  -i FILE     Input disk image"
-echo "  -o DIR      Output directory"
-echo "  -t TYPES    File types (jpg,png,pdf,doc,exe,zip,all)"
+echo -e "\033[33mCarve specific types only:\033[0m"
+echo "  foremost -t jpg,pdf,doc,zip -i image.dd -o /output"
+echo "  foremost -t all -i usb_dump.img -o /output      # everything"
+echo
+echo -e "\033[33mKey flags:\033[0m"
+echo "  -i FILE     Input file or device"
+echo "  -o DIR      Output directory (must not exist)"
+echo "  -t TYPES    File types: jpg,png,pdf,doc,exe,zip,avi,all,..."
 echo "  -v          Verbose mode"
+echo "  -q          Quick mode (skip audit file)"
 echo
-echo -e "\033[33mExample - recover deleted photos:\033[0m"
-echo "  foremost -t jpg,png -i /dev/sda1 -o ~/recovered"
+echo -e "\033[33mExample — recover deleted photos from a USB:\033[0m"
+echo "  sudo foremost -t jpg,png -i /dev/sdb1 -o ~/recovered"
 echo -e "\033[90m──────────────────────────────────────\033[0m"

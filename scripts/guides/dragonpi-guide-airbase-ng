@@ -4,6 +4,13 @@ echo -e "║  📡 airbase-ng — Rogue Access Point ║"
 echo -e "║  Evil Twin / Compliance Testing     ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Creates fake WiFi access points — Evil Twin"
+echo "  attacks to capture credentials, or compliance testing to see if"
+echo "  clients will connect to a spoofed AP. Broadcasts as any network"
+echo "  name, responds to all probe requests, and forces clients to connect"
+echo "  to you instead of the real AP. Pair with dnsmasq + captive portal"
+echo "  for full credential harvesting."
+echo
 echo -e "\033[33m▶ Quick Compliance Test (copy-paste):\033[0m"
 echo -e "\033[37m  sudo airbase-ng -e \"CompanyWiFi\" -c 6 -P -C 60 wlan0mon\033[0m"
 echo

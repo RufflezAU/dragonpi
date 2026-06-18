@@ -1,25 +1,49 @@
 #!/bin/bash
+# ttyd launches us without a login shell, so PATH is minimal and omits
+# /usr/sbin and /sbin — where aircrack-ng suite and other tools live.
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$PATH"
+
 if [ -f /tmp/dragonpi-cmd ]; then
     CMD=$(cat /tmp/dragonpi-cmd)
     rm -f /tmp/dragonpi-cmd
-    TOOL=$(basename "$CMD" | cut -d" " -f1)
-    
+
+    # Determine the display name for the banner.
+    # If CMD is a guide script path (e.g. /usr/local/bin/dragonpi-guide-nmap),
+    # extract the real tool name from it. Otherwise use the first token.
+    if [[ "$CMD" == /usr/local/bin/dragonpi-guide-* ]]; then
+        TOOL=$(basename "$CMD" | sed 's/^dragonpi-guide-//')
+    elif [[ "$CMD" == /usr/local/bin/dragonpi-vuln-guide ]]; then
+        TOOL="nmap-vuln"
+    else
+        TOOL=$(basename "$CMD" | cut -d" " -f1)
+    fi
+
     echo -e "\033[32m╔══════════════════════════════════════╗"
     echo -e "║  🐉 DragonPi — $TOOL"
     echo -e "╚══════════════════════════════════════╝\033[0m"
     echo
-    
-    # Check if a guide exists for this tool
-    GUIDEFILE="/usr/local/bin/dragonpi-guide-$TOOL"
-    if [ -x "$GUIDEFILE" ]; then
-        "$GUIDEFILE"
+
+    # Interactive tools — launch directly, no guide/help
+    case "$TOOL" in
+        htop|btop|neofetch)
+            exec $CMD
+            ;;
+    esac
+
+    # Run the guide (either CMD IS the guide, or a guide exists for this tool)
+    if [[ "$CMD" == /usr/local/bin/dragonpi-guide-* ]] && [ -x "$CMD" ]; then
+        # CMD is already a guide script path — run it directly
+        "$CMD"
+    elif [ -x "/usr/local/bin/dragonpi-guide-$TOOL" ]; then
+        # A guide exists for this tool — run it
+        "/usr/local/bin/dragonpi-guide-$TOOL"
     else
-        # Try to show help with various flags
+        # No guide — run the command (TOOL_CMD includes appropriate help flags)
         echo -e "\033[33m📖 Usage & Options:\033[0m"
         echo -e "\033[90m──────────────────────────────────────\033[0m"
-        $CMD --help 2>&1 | head -40 || $CMD -h 2>&1 | head -40 || $CMD help 2>&1 | head -40 || echo "(no help available for $TOOL)"
+        $CMD 2>&1 | head -40 || echo "(no help available for $TOOL)"
     fi
-    
+
     echo
     echo -e "\033[90m──────────────────────────────────────\033[0m"
     echo -e "\033[33m💻 Ready. Type your command above or use the help shown.\033[0m"

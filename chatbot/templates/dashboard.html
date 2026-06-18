@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐉 DragonPi — Cybersecurity Toolkit</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0d0b; --bg2:#0f1411; --bg3:#151c17; --bg4:#1a2418;
+  --border:#1a281f; --border2:#2a4a32;
+  --text:#c8d6cc; --text2:#6b8a74; --text3:#4a6353;
+  --green:#4ade80; --green2:#22c55e; --amber:#f59e0b; --red:#ef4444; --cyan:#22d3ee;
+  --font:'JetBrains Mono','SF Mono','Fira Code','Consolas','Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',monospace;
+  --radius:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  background:var(--bg);
+  background-image:linear-gradient(rgba(74,222,128,0.012) 1px,transparent 1px);
+  background-size:100% 3px;
+  color:var(--text);font-family:var(--font);font-size:14px;
+  padding-top:26px; /* RSS ticker */
+}
+
+/* ── RSS ticker (top) ── */
+#rss-top{
+  position:fixed;top:0;left:0;right:0;z-index:9999;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  height:26px;overflow:hidden;font-size:11px;line-height:26px;white-space:nowrap;
+}
+#rss-top .track{display:inline-block;animation:scroll 420s linear infinite;padding-left:100%}
+#rss-top span{margin-right:34px;color:var(--text2)}
+#rss-top .src{color:var(--green);font-weight:700;margin-right:6px}
+#rss-top a{color:var(--text);text-decoration:none}
+#rss-top a:hover{color:var(--green)}
+#rss-top:hover .track{animation-play-state:paused}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+
+/* ── Header ── */
+.header{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  position:sticky;top:26px;z-index:100;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .logo{font-size:1.6em}
+.brand h1{font-size:1.1em;font-weight:600;color:var(--text);letter-spacing:.02em}
+.brand .sub{font-size:.7em;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.header-links{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hlink{
+  background:var(--bg3);border:1px solid var(--border);color:var(--text2);
+  padding:6px 12px;border-radius:var(--radius);text-decoration:none;
+  font-size:.78em;transition:all .15s;display:inline-flex;align-items:center;gap:6px;
+}
+.hlink:hover{background:var(--border);color:var(--green);border-color:var(--border2)}
+.hlink.primary{background:var(--green);color:#0a0d0b;border-color:var(--green);font-weight:600}
+.hlink.primary:hover{background:var(--green2)}
+
+/* ── Layout ── */
+.wrap{max-width:1400px;margin:0 auto;padding:20px 24px 60px}
+
+/* ── Live system stats bar ── */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;
+  margin-bottom:20px;
+}
+.stat{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px 14px;display:flex;align-items:center;gap:10px;
+}
+.stat i{color:var(--green);font-size:1.1em;width:18px;text-align:center;flex-shrink:0}
+.stat .info{flex:1;min-width:0}
+.stat .lbl{font-size:.65em;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;line-height:1.2}
+.stat .val{font-size:.9em;color:var(--text);font-weight:600;line-height:1.3}
+.stat .val.warn{color:var(--amber)}
+.stat .val.crit{color:var(--red)}
+.stat .bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;min-width:40px}
+.stat .bar > div{height:100%;background:var(--green);transition:width .4s}
+.stat .bar > div.warn{background:var(--amber)}
+.stat .bar > div.crit{background:var(--red)}
+
+/* ── Threat intel row ── */
+.threat-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+@media(max-width:860px){.threat-row{grid-template-columns:1fr}}
+.panel{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;
+}
+.panel-head{
+  padding:9px 14px;background:var(--bg3);border-bottom:1px solid var(--border);
+  font-size:.72em;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);
+  display:flex;align-items:center;gap:8px;
+}
+.panel-head i{color:var(--green)}
+.panel-head .cnt{margin-left:auto;color:var(--text2)}
+.panel-body{padding:8px 12px;max-height:240px;overflow-y:auto}
+.panel-body::-webkit-scrollbar{width:5px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.ti-item{padding:7px 4px;border-bottom:1px solid var(--border);font-size:.78em;line-height:1.4}
+.ti-item:last-child{border-bottom:none}
+.ti-item .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ti-item .id{color:var(--amber);font-weight:700}
+.ti-item .name{color:var(--text);font-weight:500}
+.ti-item .score{color:var(--red);font-weight:700;font-size:1.05em}
+.ti-item .desc{color:var(--text2);font-size:.92em;margin-top:2px}
+.ti-item .meta{color:var(--text3);font-size:.85em;margin-top:3px}
+.ti-item .tags{color:var(--green2);font-size:.85em}
+.ti-empty{color:var(--text3);font-size:.8em;padding:14px;text-align:center}
+
+/* Clickable threat intel items */
+a.ti-link{
+  display:block;text-decoration:none;color:inherit;
+  padding:7px 4px;border-bottom:1px solid var(--border);font-size:.78em;line-height:1.4;
+  border-radius:3px;transition:background .12s;
+}
+a.ti-link:hover{background:var(--bg3)}
+a.ti-link:last-child{border-bottom:none}
+a.ti-link .id:hover{color:var(--green)}
+.ti-link .ext{color:var(--text3);font-size:.8em;margin-left:4px}
+
+/* ── Service sections ── */
+.section{margin-bottom:26px}
+.section-title{
+  display:flex;align-items:center;gap:10px;
+  font-size:.8em;color:var(--green);letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:12px;font-weight:600;
+  padding-bottom:8px;border-bottom:1px solid var(--border);
+}
+.section-title i{font-size:1em}
+.section-title .count{margin-left:auto;color:var(--text3);font-weight:400;font-size:.9em}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:13px 15px;display:flex;gap:12px;align-items:flex-start;
+  text-decoration:none;color:var(--text);transition:all .15s;cursor:pointer;
+  position:relative;
+}
+.card:hover{background:var(--bg3);border-color:var(--border2);transform:translateY(-1px);box-shadow:0 3px 14px rgba(0,0,0,.3)}
+.card .ic{
+  width:32px;height:32px;border-radius:var(--radius);flex-shrink:0;
+  background:var(--bg4);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;color:var(--green);font-size:.95em;
+}
+.card:hover .ic{border-color:var(--border2);color:var(--green2)}
+.card .body{flex:1;min-width:0}
+.card .nm{font-size:.88em;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:3px}
+.card .sub{font-size:.72em;color:var(--text2);line-height:1.35}
+.card .tag{
+  position:absolute;top:8px;right:10px;font-size:.58em;letter-spacing:.06em;
+  padding:1px 6px;border-radius:8px;font-weight:700;
+}
+.tag-CLI{background:#1e2a22;color:var(--green2)}
+.tag-WEB{background:#1e2630;color:var(--cyan)}
+.tag-AI{background:#2a2018;color:var(--amber)}
+.tag-PODCAST{background:#2a1e2a;color:#c084fc}
+.tag-NEWS{background:#2a2418;color:var(--amber)}
+.card .play-badge{
+  position:absolute;bottom:8px;right:10px;color:var(--green2);font-size:.7em;
+  display:none;
+}
+.card.podcast:hover .play-badge{display:flex;align-items:center;gap:4px}
+
+/* footer */
+.footer{
+  text-align:center;color:var(--text3);font-size:.7em;padding:30px 20px 20px;
+  border-top:1px solid var(--border);margin-top:20px;
+}
+.footer a{color:var(--text2);text-decoration:none}
+.footer a:hover{color:var(--green)}
+
+/* Donate */
+.donate{
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--border);
+  color:var(--text2);font-size:.85em;line-height:1.6;
+}
+.donate .crypto{margin-top:6px;color:var(--text)}
+.donate .crypto code{
+  background:var(--bg4);border:1px solid var(--border);color:var(--green);
+  padding:2px 8px;border-radius:4px;font-size:.92em;letter-spacing:.02em;
+  user-select:all;
+}
+.copy-crypto{
+  background:var(--bg3);border:1px solid var(--border);color:var(--text2);
+  padding:2px 8px;border-radius:3px;cursor:pointer;font-size:.78em;
+  font-family:var(--font);transition:all .15s;
+}
+.copy-crypto:hover{background:var(--border);color:var(--green);border-color:var(--border2)}
+.copy-crypto.copied{background:var(--green);color:#0a0d0b;border-color:var(--green)}
+
+/* toast */
+.toast{
+  position:fixed;bottom:20px;right:20px;background:var(--green);color:#0a0d0b;
+  padding:9px 16px;border-radius:var(--radius);font-size:.8em;font-weight:600;
+  z-index:200;animation:slideIn .3s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+/* CVE drawer toggle (mobile) */
+.drawer-toggle{display:none}
+
+/* ── Mobile responsive ── */
+
+/* Tablet (≤860px) */
+@media(max-width:860px){
+  .threat-row{grid-template-columns:1fr}
+  .wrap{padding:16px}
+  .cards{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+  .header-links{gap:5px}
+  .hlink{padding:5px 9px;font-size:.72em}
+}
+
+/* Mobile (≤640px) */
+@media(max-width:640px){
+  body{padding-top:24px;font-size:13px}
+  #rss-top{height:24px;font-size:10px;line-height:24px}
+  .header{padding:10px 14px;gap:8px;position:sticky;top:24px}
+  .brand{gap:8px}
+  .brand .logo{font-size:1.3em}
+  .brand h1{font-size:.95em}
+  .brand .sub{display:none}
+  .header-links{margin-left:auto;gap:4px}
+  .hlink{padding:5px 8px;font-size:.7em}
+  .hlink span{display:none}              /* icon-only on mobile */
+  .wrap{padding:12px 10px 40px}
+  /* Stats: 2-col grid on mobile */
+  .stats-bar{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+  .stat{padding:10px 10px;gap:8px;justify-content:center;text-align:center}
+  .stat .bar{display:none}               /* hide bars on small screens */
+  .stat i{font-size:1em}
+  .stat .lbl{font-size:.58em}
+  .stat .val{font-size:.9em}
+  /* Threat intel: stack, compact */
+  .threat-row{gap:10px;margin-bottom:18px}
+  .panel-body{max-height:180px;padding:6px 10px}
+  .ti-item,a.ti-link{padding:6px 4px;font-size:.72em;line-height:1.35}
+  .ti-item .top,a.ti-link .top{flex-wrap:wrap;gap:4px}
+  .ti-item .desc,a.ti-link .desc{font-size:.9em;line-height:1.3}
+  .ti-item .meta,a.ti-link .meta{font-size:.82em;line-height:1.3}
+  /* Sections: tighter spacing */
+  .section{margin-bottom:20px}
+  .section-title{font-size:.72em;gap:8px;margin-bottom:8px;padding-bottom:6px}
+  .section-title .count{font-size:.85em}
+  /* Cards: single column on phones */
+  .cards{grid-template-columns:1fr;gap:8px}
+  .card{padding:11px 12px;gap:10px}
+  .card .ic{width:28px;height:28px;font-size:.85em}
+  .card .nm{font-size:.84em}
+  .card .sub{font-size:.7em}
+  .card .tag{font-size:.55em;padding:1px 5px}
+  /* Footer */
+  .footer{padding:20px 14px 14px;font-size:.68em}
+  .donate{font-size:.8em}
+  .donate .crypto code{font-size:.85em;word-break:break-all}
+  /* Toast */
+  .toast{bottom:14px;right:14px;left:14px;text-align:center}
+}
+
+/* Small phones (≤400px) */
+@media(max-width:400px){
+  .stats-bar{grid-template-columns:1fr}
+  .brand h1{font-size:.85em}
+  .hlink{padding:5px 7px}
+}
+</style>
+</head>
+<body>
+
+<!-- RSS ticker -->
+<div id="rss-top"><div class="track" id="rssTrack">loading feed…</div></div>
+
+<!-- Header -->
+<div class="header">
+  <div class="brand">
+    <div class="logo">🐉</div>
+    <div>
+      <h1>DragonPi</h1>
+      <div class="sub">{{ subtitle }}</div>
+    </div>
+  </div>
+  <div class="header-links">
+    {% for l in links %}
+    <a class="hlink" href="{{ l.url }}" {% if l.target %}target="{{ l.target }}"{% endif %}>
+      <i class="{{ l.icon }}"></i> <span>{{ l.name }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- Live system stats -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat"><i class="fas fa-microchip"></i><div><div class="lbl">CPU</div><div class="val" id="stCpu">—</div></div><div class="bar"><div id="barCpu" style="width:0"></div></div></div>
+    <div class="stat"><i class="fas fa-memory"></i><div><div class="lbl">Memory</div><div class="val" id="stMem">—</div></div><div class="bar"><div id="barMem" style="width:0"></div></div></div>
+    <div class="stat"><i class="fas fa-hdd"></i><div><div class="lbl">Disk</div><div class="val" id="stDisk">—</div></div><div class="bar"><div id="barDisk" style="width:0"></div></div></div>
+    <div class="stat"><i class="fas fa-temperature-half"></i><div><div class="lbl">Temp</div><div class="val" id="stTemp">—</div></div></div>
+    <div class="stat"><i class="fas fa-clock"></i><div><div class="lbl">Uptime</div><div class="val" id="stUp" style="font-size:.78em">—</div></div></div>
+    <div class="stat"><i class="fas fa-heart-pulse"></i><div><div class="lbl">Load</div><div class="val" id="stLoad" style="font-size:.78em">—</div></div></div>
+  </div>
+
+  <!-- Threat intel -->
+  <div class="threat-row">
+    <div class="panel">
+      <div class="panel-head"><i class="fas fa-bug"></i> Latest Critical CVEs <span class="cnt" id="cveCnt"></span></div>
+      <div class="panel-body" id="cveBody"><div class="ti-empty">loading…</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><i class="fas fa-satellite-dish"></i> AlienVault OTX Pulses <span class="cnt" id="otxCnt"></span></div>
+      <div class="panel-body" id="otxBody"><div class="ti-empty">loading…</div></div>
+    </div>
+  </div>
+
+  <!-- Service sections -->
+  {% for s in services %}
+  <div class="section">
+    <div class="section-title">
+      <i class="{{ s.icon }}"></i> {{ s.name }}
+      <span class="count">{{ s['items']|length }} tools</span>
+    </div>
+    <div class="cards">
+      {% for item in s['items'] %}
+      <a class="card {% if item.tag == 'PODCAST' %}podcast{% endif %}"
+         href="{{ item.url }}"
+         {% if item.target %}target="{{ item.target }}"{% elif item.url.startswith('/term/') %}target="_blank"{% endif %}>
+        <div class="ic"><i class="{{ item.icon }}"></i></div>
+        <div class="body">
+          <div class="nm">{{ item.name }}</div>
+          <div class="sub">{{ item.subtitle }}</div>
+        </div>
+        {% if item.tag %}<span class="tag tag-{{ item.tag }}">{{ item.tag }}</span>{% endif %}
+        {% if item.tag == 'PODCAST' %}<span class="play-badge"><i class="fas fa-play"></i> play</span>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="footer">
+    DragonPi · custom dashboard engine ·
+    <a href="/chat">DragonAI</a> ·
+    <a href="/podcast">Podcasts</a> ·
+    <a href="http://dragonpi.local:7681">Terminal</a> ·
+    <a href="https://github.com/RufflezAU/dragonpi" target="_blank">GitHub</a>
+    <div class="donate">
+      ☕ If you'd like to donate to the development of the project or buy me a beer:
+      <div class="crypto">🐕 Dogecoin: <code>DFVU486JDaXobgEGgYrAwLCnJno2PQ1hjz</code> <button class="copy-crypto" onclick="copyCrypto(this)">copy</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── helpers ── */
+function esc(t){const d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML}
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+
+/* ── RSS ticker ── */
+function loadRSS(){
+  fetch('/rss/feed')
+    .then(r=>r.json())
+    .then(items=>{
+      if(!items||!items.length){
+        document.getElementById('rssTrack').innerHTML='<span>📡 No feeds available — will retry</span>';
+        return;
+      }
+      document.getElementById('rssTrack').innerHTML=items.map(i=>
+        `<span><b class="src">${esc(i.source)}</b><a href="${esc(i.link)}" target="_blank">${esc((i.title||'').slice(0,90))}</a></span>`
+      ).join('');
+    })
+    .catch(()=>{
+      document.getElementById('rssTrack').innerHTML='<span>📡 Loading cyber feeds…</span>';
+    });
+}
+loadRSS(); setInterval(loadRSS, 600000);
+
+/* ── system stats ── */
+function tier(pct){return pct>=90?'crit':pct>=75?'warn':''}
+function loadStats(){
+  fetch('/api/system').then(r=>r.json()).then(d=>{
+    if(d.error)return;
+    const cpu=parseFloat(d.cpu)||0, mem=parseFloat(d.mem)||0;
+    const diskPct=parseInt(d.disk)||0;
+    document.getElementById('stCpu').textContent=cpu.toFixed(0)+'%';
+    document.getElementById('stMem').textContent=mem.toFixed(0)+'%';
+    document.getElementById('stDisk').textContent=d.disk;
+    document.getElementById('stTemp').textContent=d.temp;
+    document.getElementById('stUp').textContent=d.uptime||'—';
+    document.getElementById('stLoad').textContent=(d.load||'—').trim();
+    const setBar=(id,pct)=>{const b=document.getElementById(id);b.style.width=Math.min(100,pct)+'%';b.className=tier(pct);};
+    setBar('barCpu',cpu); setBar('barMem',mem); setBar('barDisk',diskPct);
+    document.getElementById('stCpu').className='val '+tier(cpu);
+    document.getElementById('stMem').className='val '+tier(mem);
+    document.getElementById('stDisk').className='val '+tier(diskPct);
+  }).catch(()=>{});
+}
+loadStats(); setInterval(loadStats, 15000);
+
+/* ── CVEs ── */
+function loadCVEs(){
+  fetch('/api/threat/cves').then(r=>r.json()).then(d=>{
+    const b=document.getElementById('cveBody');
+    if(!Array.isArray(d)||!d.length){b.innerHTML='<div class="ti-empty">unavailable</div>';return;}
+    document.getElementById('cveCnt').textContent=d.length;
+    b.innerHTML=d.map(c=>`
+      <a class="ti-item ti-link" href="https://nvd.nist.gov/vuln/detail/${esc(c.id)}" target="_blank">
+        <div class="top">
+          <span class="id">${esc(c.id)}</span>
+          <span class="score">${esc(c.score)}</span>
+        </div>
+        <div class="desc">${esc(c.desc)}</div>
+      </a>`).join('');
+  }).catch(()=>{document.getElementById('cveBody').innerHTML='<div class="ti-empty">unavailable</div>';});
+}
+loadCVEs(); setInterval(loadCVEs, 1800000);
+
+/* ── OTX pulses ── */
+function loadOTX(){
+  fetch('/api/threat/otx').then(r=>r.json()).then(d=>{
+    const b=document.getElementById('otxBody');
+    if(!Array.isArray(d)||!d.length){b.innerHTML='<div class="ti-empty">unavailable</div>';return;}
+    document.getElementById('otxCnt').textContent=d.length;
+    b.innerHTML=d.map(p=>{
+      const link=p.link||'https://otx.alienvault.com/';
+      return `<a class="ti-item ti-link" href="${esc(link)}" target="_blank">
+        <div class="top"><span class="name">${esc(p.name)}</span></div>
+        <div class="meta">${esc(p.author)} · ${esc((p.created||'').slice(0,10))} · ${p.indicators||0} indicators</div>
+        ${p.tags&&p.tags.length?`<div class="tags">${p.tags.map(t=>'#'+esc(t)).join(' ')}</div>`:''}
+      </a>`;
+    }).join('');
+  }).catch(()=>{document.getElementById('otxBody').innerHTML='<div class="ti-empty">unavailable</div>';});
+}
+loadOTX(); setInterval(loadOTX, 900000);
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&e.target.tagName!=='INPUT'&&e.target.tagName!=='TEXTAREA'){e.preventDefault();window.location='/chat';}
+});
+
+function copyCrypto(btn){
+  const code=btn.previousElementSibling;
+  navigator.clipboard.writeText(code.textContent).then(()=>{
+    btn.textContent='copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='copy';btn.classList.remove('copied');},1800);
+  });
+}
+</script>
+</body>
+</html>

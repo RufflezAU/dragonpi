@@ -3,14 +3,23 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🌐 Amass — DNS Enumeration (OWASP)║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Maps a target's external attack surface by"
+echo "  enumerating subdomains — finds hidden dev/staging/admin subdomains"
+echo "  that may be vulnerable. OWASP's flagship OSINT tool. Uses passive"
+echo "  sources (certificate transparency, search engines) AND active DNS"
+echo "  brute force. The most thorough subdomain discovery tool available."
+echo
 echo -e "\033[33mEnumerate subdomains:\033[0m"
 echo "  amass enum -d target.com"
 echo "  amass enum -d target.com -o results.txt"
 echo
+echo -e "\033[33mActive enumeration (brute force + DNS):\033[0m"
+echo "  amass enum -active -d target.com -ip -o results.txt"
+echo
 echo -e "\033[33mCommon flags:\033[0m"
 echo "  -d DOMAIN   Target domain"
 echo "  -o FILE     Output file"
-echo "  -active     Active enumeration"
+echo "  -active     Active enumeration (brute force + DNS)"
 echo "  -ip         Show IP addresses"
 echo
 echo -e "\033[33mExample - full enum:\033[0m"

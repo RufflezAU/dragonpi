@@ -1,0 +1,36 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔬 Binwalk — Firmware Analysis     ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Analyzes and extracts embedded files from firmware"
+echo "  images, binaries, and any blob of data. Finds hidden filesystems,"
+echo "  kernels, bootloaders, and configs stuffed inside router/camera/IoT"
+echo "  firmware. The #1 tool for hardware hacking and IoT security research —"
+echo "  it reveals what's inside a firmware image without needing the vendor's"
+echo "  tools. Also useful for CTFs where data is hidden inside other files."
+echo
+echo -e "\033[33mScan a firmware image:\033[0m"
+echo "  binwalk firmware.bin                    # list embedded files"
+echo "  binwalk -E firmware.bin                 # entropy analysis (detect encryption)"
+echo
+echo -e "\033[33mExtract everything found:\033[0m"
+echo "  binwalk -e firmware.bin                 # extract known file types"
+echo "  binwalk -e -M firmware.bin              # recursive (extract within extracts)"
+echo
+echo -e "\033[33mExtract specific type:\033[0m"
+echo "  binwalk -e --dd='.*' firmware.bin       # extract everything"
+echo "  binwalk -D 'squashfs' firmware.bin      # extract only squashfs"
+echo
+echo -e "\033[33mSearch for specific signature:\033[0m"
+echo "  binwalk -R '\\x1f\\x8b' firmware.bin      # search for gzip magic bytes"
+echo "  binwalk -Y firmware.bin                 # identify CPU architecture"
+echo
+echo -e "\033[33mKey flags:\033[0m"
+echo "  -e           Extract known file types"
+echo "  -M           Matryoshka (recursive extraction)"
+echo "  -E           Entropy analysis"
+echo "  -Y           CPU architecture (disassembly)"
+echo "  -R BYTES     Search for raw bytes"
+echo "  -C DIR       Custom extraction directory"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

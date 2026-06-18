@@ -1,0 +1,30 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🪟 Enum4linux — SMB/AD Enumeration ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m One command to enumerate Windows/Samba"
+echo "  targets — users, groups, shares, password policy, OS info."
+echo "  Wraps rpcclient/net/smbclient into a single sweep. The fastest"
+echo "  way to profile a Windows box or Samba share you just found."
+echo
+echo -e "\033[33mFull enumeration (do everything):\033[0m"
+echo "  enum4linux -a 192.168.50.20              # all checks"
+echo
+echo -e "\033[33mTargeted checks:\033[0m"
+echo "  enum4linux -U 192.168.50.20             # list users"
+echo "  enum4linux -S 192.168.50.20             # list shares"
+echo "  enum4linux -G 192.168.50.20             # list groups"
+echo "  enum4linux -P 192.168.50.20             # password policy"
+echo "  enum4linux -o 192.168.50.20             # OS info"
+echo "  enum4linux -i 192.168.50.20             # printer info"
+echo
+echo -e "\033[33mWith credentials:\033[0m"
+echo "  enum4linux -a -u 'admin' -p 'Pass123!' 192.168.50.20"
+echo
+echo -e "\033[33mVerbose (see raw RPC calls):\033[0m"
+echo "  enum4linux -a -v 192.168.50.20"
+echo
+echo -e "\033[33mKey flags:\033[0m  -a all · -U users · -S shares · -G groups · -P policy"
+echo "                  -u user · -p pass · -v verbose"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

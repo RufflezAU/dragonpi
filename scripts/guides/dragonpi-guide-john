@@ -1,7 +1,12 @@
 #!/bin/bash
 echo -e "\033[32m╔══════════════════════════════════════╗"
-echo -e "║  🔐 John the Ripper — Password Cracker ║"
+echo -e "║  🔐 John the Ripper — Password Crack║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Cracks password hashes offline — fast, CPU-based,"
+echo "  and supports 300+ hash formats. Use it on hashes you extracted from"
+echo "  a target (via secretsdump, /etc/shadow, etc). Reuses passwords across"
+echo "  accounts. The classic password cracker — autodetects hash formats."
 echo
 echo -e "\033[33mUsage:\033[0m"
 echo "  john hash.txt"
@@ -16,5 +21,4 @@ echo "  --rules           Enable word mangling rules"
 echo
 echo -e "\033[33mExample:\033[0m"
 echo "  john --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt"
-echo
 echo -e "\033[90m──────────────────────────────────────\033[0m"

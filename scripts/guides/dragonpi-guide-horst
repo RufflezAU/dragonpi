@@ -1,0 +1,27 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  📶 Horst — WiFi Spectrum Scanner    ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Live RF spectrum + packet scan for"
+echo "  WiFi. Shows signal strength, channel usage, nearby APs, and"
+echo "  packet stats in a real-time curses UI. Great for finding a"
+echo "  clean channel before deauth/rogue-AP attacks."
+echo
+echo -e "\033[33mScan on monitor-mode interface:\033[0m"
+echo "  sudo airmon-ng start wlan0              # → wlan0mon"
+echo "  sudo horst -i wlan0mon                  # launch UI"
+echo
+echo -e "\033[33mAuto-detect + scan:\033[0m"
+echo "  sudo horst                              # picks first mon iface"
+echo
+echo -e "\033[33mChannel hop (default) vs lock channel:\033[0m"
+echo "  sudo horst -i wlan0mon -c 6             # lock to channel 6"
+echo "  sudo horst -i wlan0mon                  # hop all channels"
+echo
+echo -e "\033[33mSave capture for later:\033[0m"
+echo "  sudo horst -i wlan0mon -o scan.cap      # write to file"
+echo
+echo -e "\033[33mKey flags:\033[0m  -i iface · -c channel · -o outfile · -h this help"
+echo -e "\033[90m⚠  Needs monitor mode + root. Use sudo.\033[0m"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

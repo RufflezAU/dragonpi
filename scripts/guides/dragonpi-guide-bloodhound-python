@@ -1,0 +1,30 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🐕 BloodHound — AD Attack Path Map ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Maps the attack paths in an Active Directory"
+echo "  environment — shows exactly how to get from a regular user to Domain"
+echo "  Admin. Collects AD data (users, groups, ACLs, sessions, GPOs) and"
+echo "  visualizes it as a graph. You ask 'can I reach Domain Admin from"
+echo "  here?' and BloodHound draws the shortest path. The most important"
+echo "  tool in modern AD pentesting."
+echo
+echo -e "\033[33mCollect data (need any domain creds):\033[0m"
+echo "  bloodhound-python -u user -p 'Pass123' -d corp.local -ns 10.0.0.1 -c All"
+echo "  bloodhound-python -u user -p 'Pass123' -d corp.local -dc 10.0.0.1 -c All"
+echo
+echo -e "\033[33mCollect with hash (pass-the-hash):\033[0m"
+echo "  bloodhound-python -u user -hashes :NT_HASH -d corp.local -ns 10.0.0.1 -c All"
+echo
+echo -e "\033[33mCollection methods (pick what you need):\033[0m"
+echo "  -c All          # everything (default)"
+echo "  -c DCOnly       # DC only — no session/computer data (stealthy)"
+echo "  -c Group,LocalAdmin,Session  # targeted collection"
+echo
+echo -e "\033[33mOutput:\033[0m"
+echo "  Produces .json files — load into BloodHound GUI (Neo4j)"
+echo "  Or upload to BloodHound CE at http://localhost:8080"
+echo
+echo -e "\033[33mKey flags:\033[0m  -u user · -p pass · -d domain · -dc IP · -ns DNS · -c method"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

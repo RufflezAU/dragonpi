@@ -3,6 +3,12 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🕸 CeWL — Website Wordlist Gen    ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Scrapes words from a target website and builds"
+echo "  a custom wordlist from the content. Companies often use internal"
+echo "  project names, product names, or locations in passwords — CeWL"
+echo "  captures those. Far more effective than generic wordlists for"
+echo "  targeted attacks. Also extracts email addresses for phishing."
+echo
 echo -e "\033[33mGenerate wordlist from website:\033[0m"
 echo "  cewl http://target.com -w words.txt"
 echo "  cewl -d 3 -m 6 http://target.com -w deep.txt"

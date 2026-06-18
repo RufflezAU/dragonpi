@@ -1,0 +1,33 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  💣 ffuf — Fast Web Fuzzer (Go)     ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Blazing-fast web fuzzer for directory discovery,"
+echo "  vhost enumeration, parameter discovery, and brute-force. Written in"
+echo "  Go — one of the fastest fuzzers available. Replaces dirb/gobuster"
+echo "  for most tasks. Uses the FUZZ keyword to mark where the wordlist"
+echo "  goes in the URL. Auto-calibrates filtering to hide false positives."
+echo
+echo -e "\033[33mDirectory discovery:\033[0m"
+echo "  ffuf -u http://target.com/FUZZ -w /usr/share/wordlists/dirb/common.txt"
+echo "  ffuf -u http://target.com/FUZZ -w wordlist.txt -mc 200,301,403"
+echo
+echo -e "\033[33mWith file extensions:\033[0m"
+echo "  ffuf -u http://target.com/FUZZ -w wordlist.txt -e .php,.txt,.bak"
+echo
+echo -e "\033[33mVHost (subdomain) discovery:\033[0m"
+echo "  ffuf -u http://target.com -H 'Host: FUZZ.target.com' -w subdomains.txt -fs 1234"
+echo
+echo -e "\033[33mPOST parameter fuzzing:\033[0m"
+echo "  ffuf -u http://target.com/login -X POST -d 'user=FUZZ&pass=x' -w users.txt"
+echo
+echo -e "\033[33mKey flags:\033[0m"
+echo "  -u URL       Target (use FUZZ keyword where wordlist goes)"
+echo "  -w FILE      Wordlist"
+echo "  -mc CODES    Match HTTP codes (200,301,403) — default 200,204,301,302,307,401,403"
+echo "  -fs SIZE     Filter out responses of this size (hide false positives)"
+echo "  -e EXT       Append extensions (.php,.txt,.bak)"
+echo "  -ac          Auto-calibrate (recommended — auto-hides junk)"
+echo "  -t N         Threads (default 40 — increase for speed)"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

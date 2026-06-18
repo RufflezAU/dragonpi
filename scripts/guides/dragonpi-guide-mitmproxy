@@ -3,6 +3,12 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🔀 mitmproxy — HTTPS Interceptor  ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Intercepts, inspects, and modifies HTTPS traffic"
+echo "  in real-time. Unlike tcpdump (which sees packets), mitmproxy"
+echo "  decrypts TLS so you can read and modify HTTP requests/responses."
+echo "  Use it for API testing, credential capture, or understanding what"
+echo "  an app is sending. Supports Python scripting for automated mods."
+echo
 echo -e "\033[33mStart proxy:\033[0m"
 echo "  mitmproxy        # Interactive TUI"
 echo "  mitmweb          # Web interface (port 8081)"
@@ -15,5 +21,4 @@ echo
 echo -e "\033[33mExample - intercept & modify traffic:\033[0m"
 echo "  mitmweb --listen-port 8080"
 echo "  # Then browse to http://dragonpi.local:8081 for web UI"
-echo
 echo -e "\033[90m──────────────────────────────────────\033[0m"

@@ -1,0 +1,36 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🛡️  wafw00f — WAF Detector          ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Identifies what Web Application Firewall (WAF)"
+echo "  is protecting a target — Cloudflare, AWS WAF, ModSecurity, Akamai,"
+echo "  etc. Before you attack a web app, you NEED to know if a WAF is"
+echo "  blocking your fuzzing, SQLi, or brute-force. wafw00f tells you"
+echo "  which WAF is in front so you can plan evasion or switch tactics."
+echo "  Runs first, before any web tool."
+echo
+echo -e "\033[33mCheck a single target:\033[0m"
+echo "  wafw00f http://target.com"
+echo "  wafw00f https://shop.example.com"
+echo
+echo -e "\033[33mFind ALL WAFs matching (don't stop at first):\033[0m"
+echo "  wafw00f -a http://target.com"
+echo
+echo -e "\033[33mScan multiple targets from a file:\033[0m"
+echo "  wafw00f -i targets.txt"
+echo
+echo -e "\033[33mVerbose (see detection details):\033[0m"
+echo "  wafw00f -v http://target.com"
+echo
+echo -e "\033[33mList all detectable WAFs:\033[0m"
+echo "  wafw00f -l"
+echo
+echo -e "\033[33mKey flags:\033[0m"
+echo "  -a          Find all WAFs (don't stop at first match)"
+echo "  -i FILE     Read targets from file"
+echo "  -v          Verbose output"
+echo "  -l          List all detectable WAFs"
+echo "  -r          Don't follow redirects"
+echo "  -p PROXY    Use HTTP/SOCKS proxy"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

@@ -3,6 +3,12 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🚀 SSHuttle — VPN over SSH        ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Creates a transparent VPN tunnel over SSH —"
+echo "  no client software needed on the remote side, just SSH access."
+echo "  Routes traffic through the SSH host to reach internal networks."
+echo "  Perfect for pivoting: compromise one SSH-accessible host, then"
+echo "  sshuttle to reach the entire internal network behind it."
+echo
 echo -e "\033[33mRoute traffic through SSH:\033[0m"
 echo "  sshuttle -r user@10.0.0.1 0/0"
 echo "  sshuttle -r user@10.0.0.1 192.168.1.0/24"

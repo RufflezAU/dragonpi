@@ -3,6 +3,12 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🔄 Socat — Network Swiss Army Knife║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Bidirectional data relay between two channels —"
+echo "  TCP, UDP, files, pipes, processes. More powerful than netcat: it can"
+echo "  fork, listen persistently, and chain connections. Use it for port"
+echo "  forwarding, reverse shells, file transfer, and pivoting through"
+echo "  networks. When netcat isn't flexible enough, reach for socat."
+echo
 echo -e "\033[33mPort forward:\033[0m"
 echo "  socat TCP-LISTEN:8080,fork TCP:10.0.0.1:80"
 echo

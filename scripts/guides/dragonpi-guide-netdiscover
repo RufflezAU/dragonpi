@@ -1,0 +1,25 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔎 Netdiscover — ARP Host Discovery ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Active/passive ARP scan to find live"
+echo "  hosts on the local subnet — faster than nmap -sn for L2 discovery,"
+echo "  and works passively (sniffs ARP traffic silently)."
+echo
+echo -e "\033[33mActive scan (default):\033[0m"
+echo "  sudo netdiscover -r 192.168.50.0/24       # scan specific range"
+echo "  sudo netdiscover                          # auto-detect + scan"
+echo
+echo -e "\033[33mPassive (silent — just sniff):\033[0m"
+echo "  sudo netdiscover -p                        # no packets sent, listen only"
+echo
+echo -e "\033[33mFast scan (less stealthy):\033[0m"
+echo "  sudo netdiscover -r 192.168.50.0/24 -f     # fast mode, 1ms间隔"
+echo
+echo -e "\033[33mTargeted — single host:\033[0m"
+echo "  sudo netdiscover -r 192.168.50.1/32"
+echo
+echo -e "\033[33mKey flags:\033[0m  -r range · -p passive · -f fast · -s sleep(ms) · -n nodes"
+echo -e "\033[90m⚠  Needs root (raw sockets). Use sudo.\033[0m"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

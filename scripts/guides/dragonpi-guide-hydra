@@ -3,15 +3,26 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🔓 Hydra — Login Brute-Forcer     ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Brute-forces login credentials across 50+"
+echo "  protocols — SSH, FTP, HTTP, SMB, RDP, MySQL, VNC, and more. The"
+echo "  go-to for testing weak passwords on network services. Parallelized"
+echo "  and fast. Use it after finding open services (via nmap) to test if"
+echo "  they use weak/default credentials."
+echo
 echo -e "\033[33mUsage:\033[0m"
 echo "  hydra -l admin -P wordlist.txt TARGET PROTOCOL"
 echo "  hydra -L users.txt -P pass.txt ssh://192.168.1.1"
 echo "  hydra -l root -P rockyou.txt 192.168.1.1 ftp"
 echo
 echo -e "\033[33mSupported protocols:\033[0m"
-echo "  ssh, ftp, http-get, http-post, smb, rdp, mysql, vnc"
+echo "  ssh, ftp, http-get, http-post, smb, rdp, mysql, vnc, telnet, pop3..."
+echo
+echo -e "\033[33mKey flags:\033[0m"
+echo "  -l USER    Single username · -L FILE  Username list"
+echo "  -p PASS    Single password · -P FILE  Password list"
+echo "  -t TASKS   Parallel connections (default 16)"
+echo "  -f         Stop on first valid login"
 echo
 echo -e "\033[33mExample:\033[0m"
 echo "  hydra -l admin -P /usr/share/wordlists/rockyou.txt 192.168.1.1 ssh"
-echo
 echo -e "\033[90m──────────────────────────────────────\033[0m"

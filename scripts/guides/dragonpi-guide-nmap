@@ -3,6 +3,11 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  🔍 Nmap — Network Mapper          ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m The essential network scanner — discovers"
+echo "  live hosts, open ports, running services, and OS fingerprints."
+echo "  Every pentest starts with nmap. The 'what's on this network?' tool."
+echo "  Supports scripts for vuln detection, brute force, and exploitation."
+echo
 echo -e "\033[33mQuick Scans:\033[0m"
 echo "  nmap -T4 -F 192.168.1.0/24       # Fast scan of subnet"
 echo "  nmap -sn 192.168.1.0/24           # Ping sweep (find live hosts)"

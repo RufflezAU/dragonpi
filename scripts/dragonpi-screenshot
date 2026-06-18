@@ -1,0 +1,40 @@
+#!/bin/bash
+# ================================================================
+#  dragonpi-screenshot — Auto-capture the dashboard screenshot
+#  Runs via systemd timer + on each dragonpi-update
+#  Output: /opt/dragonpi/screenshots/dashboard.png
+#  Served at: http://dragonpi.local/screenshots/dashboard.png
+# ================================================================
+set -e
+
+SHOT_DIR="/opt/dragonpi/screenshots"
+SHOT_FILE="$SHOT_DIR/dashboard.png"
+URL="http://127.0.0.1/"
+TMP_FILE="$SHOT_DIR/.dashboard-tmp.png"
+
+mkdir -p "$SHOT_DIR"
+
+# Use headless Chromium to capture the dashboard.
+# --virtual-time-budget lets JS widgets (RSS ticker, stats, CVEs) load.
+# --window-size matches the README screenshot dimensions.
+chromium \
+  --headless=new \
+  --disable-gpu \
+  --no-sandbox \
+  --disable-software-rasterizer \
+  --hide-scrollbars \
+  --window-size=1440,2400 \
+  --virtual-time-budget=8000 \
+  --screenshot="$TMP_FILE" \
+  "$URL" 2>/dev/null
+
+# Validate the screenshot (must be > 50KB — a blank page is ~5KB)
+if [ -f "$TMP_FILE" ] && [ "$(stat -c%s "$TMP_FILE" 2>/dev/null || echo 0)" -gt 50000 ]; then
+  mv "$TMP_FILE" "$SHOT_FILE"
+  chmod 644 "$SHOT_FILE"
+  echo "✅ Screenshot saved: $SHOT_FILE ($(du -h "$SHOT_FILE" | cut -f1))"
+else
+  echo "⚠️  Screenshot too small or missing — keeping previous version"
+  rm -f "$TMP_FILE"
+  exit 1
+fi

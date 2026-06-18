@@ -2,13 +2,46 @@
 """DragonAI — OpenCode Go Chatbot + RSS Cyber Feed Proxy."""
 import json, subprocess, os, threading, time
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify, redirect
+from flask import Flask, render_template, request, jsonify, redirect, send_from_directory
 import feedparser, requests, socket
 import feedparser
+import yaml
 
 app = Flask(__name__)
+
+# ── Pentest engine ──
+try:
+    import pentest as pt
+    PENTEST_OK = True
+except Exception as e:
+    PENTEST_OK = False
+    print(f"[pentest] engine import failed: {e}")
 OPENCODE_BIN = os.environ.get("OPENCODE_BIN", os.path.expanduser("~/.opencode/bin/opencode"))
-OPENCODE_MODEL = os.environ.get("OPENCODE_MODEL", "opencode-go/deepseek-v4-pro")
+# Priority-ordered model list: first that works wins.
+# Set OPENCODE_MODELS as comma-separated (no spaces) to override defaults.
+_models_env = os.environ.get("OPENCODE_MODELS", "opencode-go/deepseek-v4-pro,opencode/deepseek-v4-flash-free")
+OPENCODE_MODELS = [m.strip() for m in _models_env.split(",") if m.strip()]
+OPENCODE_MODEL = OPENCODE_MODELS[0]  # keep for backwards compat / status display
+
+# Dashboard config — single source of truth (dashboard/config.yml).
+# Looks for the file next to the repo layout on disk; falls back to runtime path.
+_DASH_CONFIG_PATHS = [
+    "/opt/dragonpi/dashboard/config.yml",   # runtime (installed)
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "dashboard", "config.yml"),  # dev
+]
+def _load_dashboard_config():
+    for p in _DASH_CONFIG_PATHS:
+        try:
+            with open(p) as f:
+                cfg = yaml.safe_load(f)
+                if cfg:
+                    return cfg
+        except FileNotFoundError:
+            continue
+        except Exception as e:
+            print(f"[dashboard] config load error from {p}: {e}")
+    # safe fallback so the page still renders
+    return {"title": "🐉 DragonPi", "subtitle": "Cybersecurity Toolkit", "links": [], "services": []}
 
 _lock = threading.Lock()
 _continue = False
@@ -27,94 +60,233 @@ CRITICAL RULES:
 
 Current time: {now}]\n\n"""
 
-def run(message: str) -> dict:
-    global _continue
-    cmd = [OPENCODE_BIN, "run", "-m", OPENCODE_MODEL, "--format", "json", "--dangerously-skip-permissions"]
-    with _lock:
-        if _continue: cmd.append("-c")
-        _should_continue = True
+def _try_model(model: str, message: str, is_continue: bool) -> dict:
+    """Try a single model; returns result dict or None on failure (caller retries)."""
+    cmd = [OPENCODE_BIN, "run", "-m", model, "--format", "json", "--dangerously-skip-permissions"]
+    if is_continue:
+        cmd.append("-c")
     cmd.append(SYSTEM.format(now=datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + message)
 
-    result = {"text": "", "session": None, "error": None}
+    result = {"text": "", "session": None, "error": None, "_model": model}
     try:
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd="/home/dragonpi")
-        
-        # Read stdout with timeout — using communicate to avoid deadlock
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                text=True, cwd="/home/dragonpi")
         try:
             stdout, stderr = proc.communicate(timeout=120)
         except subprocess.TimeoutExpired:
             proc.kill()
-            stdout, stderr = proc.communicate()
-            return {"text": "", "session": None, "error": "Command timed out after 120s. Try a faster scan (e.g., -T4 -F) or a smaller target."}
-        
+            proc.communicate()
+            result["error"] = f"Model {model} timed out after 120s"
+            return result
+
         for line in stdout.splitlines():
             line = line.strip()
-            if not line: continue
+            if not line:
+                continue
             try:
-                ev = json.loads(line); t = ev.get("type")
-                if t == "step_start": result["session"] = ev.get("sessionID")
-                elif t == "text": result["text"] += ev["part"]["text"]
-                elif t == "error": result["error"] = ev.get("message", str(ev))
-            except json.JSONDecodeError: pass
-        
+                ev = json.loads(line)
+                t = ev.get("type")
+                if t == "step_start":
+                    result["session"] = ev.get("sessionID")
+                elif t == "text":
+                    result["text"] += ev["part"]["text"]
+                elif t == "error":
+                    result["error"] = ev.get("message", str(ev))
+            except json.JSONDecodeError:
+                pass
+
         if proc.returncode != 0 and not result["error"]:
             result["error"] = stderr[:500] if stderr else f"Exit code: {proc.returncode}"
     except Exception as e:
         result["error"] = str(e)
     return result
 
+
+def run(message: str) -> dict:
+    global _continue
+    with _lock:
+        is_cont = _continue
+        _should_continue = True
+
+    last_error = None
+    for model in OPENCODE_MODELS:
+        result = _try_model(model, message, is_cont)
+        # Success: got text and no error
+        if result.get("text") and not result.get("error"):
+            return result
+        # Failure: stash error and try next model
+        last_error = result.get("error") or f"Model {model} returned empty response"
+        # If stderr hints at auth / credits, that's a clear fallback signal
+        if last_error:
+            err_lower = last_error.lower()
+            if any(kw in err_lower for kw in ("401", "unauthorized", "api key", "no credits",
+                                               "quota", "token", "not found", "not authenticated")):
+                continue  # definitely try the next model
+            # For network errors the fallback will also likely fail, but try anyway
+            continue
+
+    # All models exhausted
+    return {"text": "", "session": None, "error": f"All models failed. Last error: {last_error}"}
+
 @app.route('/')
+def dashboard():
+    """DragonPi main dashboard — custom engine, no Homer."""
+    cfg = _load_dashboard_config()
+    return render_template('dashboard.html',
+                           title=cfg.get('title', '🐉 DragonPi'),
+                           subtitle=cfg.get('subtitle', 'Cybersecurity Toolkit'),
+                           links=cfg.get('links', []),
+                           services=cfg.get('services', []))
+
+@app.route('/api/dashboard')
+def api_dashboard():
+    """Return dashboard config as JSON (for agentic editing / external consumers)."""
+    return jsonify(_load_dashboard_config())
+
 @app.route('/chat')
 def index(): return render_template('index.html')
 
 @app.route('/launch')
 def launch(): return render_template('launch.html')
 
+@app.route('/podcast')
+def podcast_player(): return render_template('podcast.html')
+
+# ============ PENTEST CONSOLE ============
+@app.route('/pentest')
+def pentest_console():
+    """DragonPi Pentest Console — external + internal automated pentesting."""
+    return render_template('pentest.html')
+
+@app.route('/api/pentest/subnet')
+def pentest_subnet():
+    """Auto-detect the Pi's subnet for internal pentest mode."""
+    try:
+        subnet = pt.detect_subnet()
+        return jsonify({"subnet": subnet})
+    except Exception as e:
+        return jsonify({"subnet": "192.168.50.0/24", "error": str(e)})
+
+@app.route('/api/pentest/start', methods=['POST'])
+def pentest_start():
+    """Launch a pentest engagement in the background."""
+    if not PENTEST_OK:
+        return jsonify({"error": "Pentest engine not available"}), 500
+    data = request.get_json(silent=True) or {}
+    mode = data.get('mode', 'external')
+    target = (data.get('target') or '').strip()
+    project = (data.get('project') or '').strip() or 'DragonPi'
+    opts = data.get('opts') or {}
+    if mode not in ('external', 'internal'):
+        return jsonify({"error": "Invalid mode"}), 400
+    if mode == 'external' and not target:
+        return jsonify({"error": "Target required for external pentest"}), 400
+    try:
+        job_id = pt.start_job(mode, target, opts, project=project)
+        return jsonify({"job_id": job_id, "status": "running"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/pentest/status/<job_id>')
+def pentest_status(job_id):
+    """Poll engagement progress (log lines, current step, reports)."""
+    if not PENTEST_OK:
+        return jsonify({"error": "Pentest engine not available"}), 500
+    job = pt.get_job(job_id)
+    if not job:
+        return jsonify({"error": "job not found"}), 404
+    return jsonify(job)
+
+@app.route('/api/pentest/stop/<job_id>', methods=['POST'])
+def pentest_stop(job_id):
+    """Stop a running engagement."""
+    if not PENTEST_OK:
+        return jsonify({"error": "Pentest engine not available"}), 500
+    ok = pt.stop_job(job_id)
+    return jsonify({"stopped": ok})
+
+@app.route('/api/pentest/reports')
+def pentest_list_reports():
+    """List all report files for the history panel."""
+    if not PENTEST_OK:
+        return jsonify({"reports": [], "error": "engine not available"})
+    try:
+        return jsonify({"reports": pt.list_reports()})
+    except Exception as e:
+        return jsonify({"reports": [], "error": str(e)})
+
+
+@app.route('/api/pentest/reports/clear', methods=['POST'])
+def pentest_clear_reports():
+    """Delete all report files. Requires confirmation."""
+    if not PENTEST_OK:
+        return jsonify({"error": "Pentest engine not available"}), 500
+    try:
+        result = pt.clear_reports()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"deleted": 0, "errors": [str(e)]})
+
+@app.route('/reports/<path:filename>')
+def pentest_download_report(filename):
+    """Download a report file (HTML, PDF, ZAP, or raw JSON)."""
+    return send_from_directory(str(pt.REPORT_DIR), filename, as_attachment=True)
+
 # ── Kali-style tool launcher: spawns ttyd with tool pre-loaded ──
+# Tools with guides → /usr/local/bin/dragonpi-guide-<tool>
+# Tools without guides → '<tool> --help' (fallback in dragonpi-shell)
 TOOL_CMD = {
     'nmap':'/usr/local/bin/dragonpi-guide-nmap', 'nmap-vuln':'/usr/local/bin/dragonpi-vuln-guide',
     'masscan':'masscan --help',
-    'netdiscover':'netdiscover --help',
+    'netdiscover':'/usr/local/bin/dragonpi-guide-netdiscover',
     'amass':'/usr/local/bin/dragonpi-guide-amass', 'subfinder':'subfinder --help',
-    'theharvester':'theHarvester --help',
-    'nikto':'/usr/local/bin/dragonpi-guide-nikto', 'sqlmap':'sqlmap --help', 'dirb':'dirb --help',
-    'gobuster':'/usr/local/bin/dragonpi-guide-gobuster', 'ffuf':'ffuf --help', 'wfuzz':'wfuzz --help',
-    'whatweb':'whatweb --help', 'wafw00f':'wafw00f --help',
+    'theharvester':'/usr/local/bin/dragonpi-guide-theharvester',
+    'nikto':'/usr/local/bin/dragonpi-guide-nikto', 'sqlmap':'/usr/local/bin/dragonpi-guide-sqlmap',
+    'gobuster':'/usr/local/bin/dragonpi-guide-gobuster', 'ffuf':'/usr/local/bin/dragonpi-guide-ffuf',
+    'dirb':'/usr/local/bin/dragonpi-guide-dirb',
+    'wfuzz':'wfuzz --help', 'whatweb':'whatweb --help', 'wafw00f':'/usr/local/bin/dragonpi-guide-wafw00f',
     'aircrack-ng':'aircrack-ng --help',
     'wifite':'wifite --help', 'reaver':'reaver --help', 'pixiewps':'pixiewps --help',
-    'hcxdumptool':'hcxdumptool --help', 'hcxtools':'hcxeiutool --help', 'horst':'horst --help',
+    'hcxdumptool':'hcxdumptool --help', 'hcxpcapngtool':'hcxpcapngtool --help',
+    'horst':'/usr/local/bin/dragonpi-guide-horst',
     'airbase-ng':'/usr/local/bin/dragonpi-guide-airbase-ng',
     'tshark':'/usr/local/bin/dragonpi-guide-tshark', 'tcpdump':'tcpdump --help',
-    'netcat':'nc --help', 'socat':'/usr/local/bin/dragonpi-guide-socat',
-    'hydra':'hydra --help', 'john':'john --help', 'crunch':'/usr/local/bin/dragonpi-guide-crunch', 'cewl':'/usr/local/bin/dragonpi-guide-cewl',
+    'netcat':'/usr/local/bin/dragonpi-guide-netcat', 'socat':'/usr/local/bin/dragonpi-guide-socat',
+    'hydra':'/usr/local/bin/dragonpi-guide-hydra', 'john':'/usr/local/bin/dragonpi-guide-john',
+    'crunch':'/usr/local/bin/dragonpi-guide-crunch', 'cewl':'/usr/local/bin/dragonpi-guide-cewl',
     'hashcat':'/usr/local/bin/dragonpi-guide-hashcat', 'ettercap':'/usr/local/bin/dragonpi-guide-ettercap',
-    'searchsploit':'searchsploit --help', 'enum4linux':'enum4linux --help',
-    'smbclient':'smbclient --help',
+    'searchsploit':'searchsploit --help', 'enum4linux':'/usr/local/bin/dragonpi-guide-enum4linux',
+    'smbclient':'/usr/local/bin/dragonpi-guide-smbclient',
     'autopsy':'/usr/local/bin/dragonpi-guide-autopsy', 'dc3dd':'/usr/local/bin/dragonpi-guide-dc3dd',
-    'binwalk':'binwalk --help', 'foremost':'/usr/local/bin/dragonpi-guide-foremost',
+    'binwalk':'/usr/local/bin/dragonpi-guide-binwalk', 'foremost':'/usr/local/bin/dragonpi-guide-foremost',
     'exiftool':'/usr/local/bin/dragonpi-guide-exiftool', 'steghide':'/usr/local/bin/dragonpi-guide-steghide',
     'proxychains4':'/usr/local/bin/dragonpi-guide-proxychains4', 'sshuttle':'/usr/local/bin/dragonpi-guide-sshuttle',
     'mitmproxy':'/usr/local/bin/dragonpi-guide-mitmproxy', 'mitmdump':'mitmdump --help', 'mitmweb':'mitmweb --help',
     'chisel':'/usr/local/bin/dragonpi-guide-chisel',
-    'certipy':'certipy --help', 'bloodhound-python':'bloodhound-python --help',
-    'secretsdump.py':'secretsdump.py --help', 'smbexec.py':'smbexec.py --help',
+    'certipy':'/usr/local/bin/dragonpi-guide-certipy', 'bloodhound-python':'/usr/local/bin/dragonpi-guide-bloodhound-python',
+    'secretsdump.py':'/usr/local/bin/dragonpi-guide-secretsdump.py', 'smbexec.py':'smbexec.py --help',
     'psexec.py':'psexec.py --help', 'wmiexec.py':'wmiexec.py --help',
     'evil-winrm':'evil-winrm --help', 'pwncat-cs':'pwncat-cs --help',
-    'coercer':'coercer --help',
-    'htop':'htop', 'btop':'btop', 'neofetch':'neofetch', 'tmux':'tmux --help',
+    'coercer':'/usr/local/bin/dragonpi-guide-coercer',
+    'htop':'htop', 'btop':'btop', 'neofetch':'fastfetch', 'tmux':'tmux --help',
 }
 
 @app.route('/term/<tool>')
 def term_launch(tool):
     """Write command to temp file, redirect to main terminal."""
     cmd = TOOL_CMD.get(tool.lower(), tool.lower().replace('-', ' '))
-    
+
     # Write command to trigger file
     with open('/tmp/dragonpi-cmd', 'w') as f:
         f.write(cmd)
-    
-    # Redirect to main terminal — wrapper script will auto-run the command
-    return redirect('http://dragonpi.local:7681')
+
+    # Redirect to the terminal — proxied through nginx on port 80 at /terminal/
+    # (NOT directly to :7681 — cross-port redirects fail in many browsers due to
+    # HTTPS-upgrade, mixed-content blocks, or hostname mismatch). nginx's
+    # /terminal/ block proxies to ttyd :7681 WITH WebSocket upgrade headers.
+    # Cache-buster (?t=<ts>) forces a fresh page load so dragonpi-shell reads
+    # the new /tmp/dragonpi-cmd on every click.
+    return redirect(f'/terminal/?t={int(time.time())}&tool={tool}')
 
 @app.route('/chat/message', methods=['POST'])
 def chat_message():
@@ -139,7 +311,12 @@ def chat_message():
 
 @app.route('/status')
 def status():
-    return jsonify({"model": OPENCODE_MODEL, "ok": os.path.isfile(OPENCODE_BIN), "time": datetime.now().isoformat()})
+    return jsonify({
+        "model": OPENCODE_MODEL,
+        "models": OPENCODE_MODELS,
+        "ok": os.path.isfile(OPENCODE_BIN),
+        "time": datetime.now().isoformat()
+    })
 
 @app.route('/api/system')
 def api_system():
@@ -230,12 +407,14 @@ def api_otx():
         )
         pulses = []
         for p in resp.json().get('results', [])[:6]:
+            pulse_id = p.get('id', '')
             pulses.append({
                 'name': p.get('name', '')[:80],
                 'author': p.get('author_name', ''),
                 'created': p.get('created', '')[:10],
                 'indicators': p.get('indicator_count', 0),
                 'tags': p.get('tags', [])[:3],
+                'link': f'https://otx.alienvault.com/pulse/{pulse_id}' if pulse_id else '',
             })
         if pulses:
             api_otx.cache = pulses
@@ -246,12 +425,12 @@ def api_otx():
     
     # Fallback: curated threat pulses
     fallback = [
-        {'name': 'Emotet Botnet Resurgence — New C2 Infrastructure', 'author': 'AlienVault', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 1247, 'tags': ['emotet', 'botnet', 'c2']},
-        {'name': 'Critical RCE in Enterprise VPN Appliances', 'author': 'CISA', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 89, 'tags': ['rce', 'vpn', 'cve']},
-        {'name': 'Phishing Campaign Targeting Financial Sector', 'author': 'Proofpoint', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 456, 'tags': ['phishing', 'finance', 'credential-harvesting']},
-        {'name': 'New Ransomware Variant — Double Extortion', 'author': 'Unit42', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 234, 'tags': ['ransomware', 'malware', 'extortion']},
-        {'name': 'Supply Chain Attack via NPM Package', 'author': 'Snyk', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 12, 'tags': ['supply-chain', 'npm', 'backdoor']},
-        {'name': 'Zero-Day in Mail Transfer Agent Exploited', 'author': 'Mandiant', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 67, 'tags': ['zero-day', 'mta', 'exploit']},
+        {'name': 'Emotet Botnet Resurgence — New C2 Infrastructure', 'author': 'AlienVault', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 1247, 'tags': ['emotet', 'botnet', 'c2'], 'link': 'https://otx.alienvault.com/browse/intel/emotet/'},
+        {'name': 'Critical RCE in Enterprise VPN Appliances', 'author': 'CISA', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 89, 'tags': ['rce', 'vpn', 'cve'], 'link': 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog'},
+        {'name': 'Phishing Campaign Targeting Financial Sector', 'author': 'Proofpoint', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 456, 'tags': ['phishing', 'finance', 'credential-harvesting'], 'link': 'https://www.proofpoint.com/us/threat-insights'},
+        {'name': 'New Ransomware Variant — Double Extortion', 'author': 'Unit42', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 234, 'tags': ['ransomware', 'malware', 'extortion'], 'link': 'https://unit42.paloaltonetworks.com/'},
+        {'name': 'Supply Chain Attack via NPM Package', 'author': 'Snyk', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 12, 'tags': ['supply-chain', 'npm', 'backdoor'], 'link': 'https://snyk.io/advisor/'},
+        {'name': 'Zero-Day in Mail Transfer Agent Exploited', 'author': 'Mandiant', 'created': datetime.now().strftime('%Y-%m-%d'), 'indicators': 67, 'tags': ['zero-day', 'mta', 'exploit'], 'link': 'https://www.mandiant.com/resources/threat-intelligence'},
     ]
     api_otx.cache = fallback
     api_otx.cache_ts = now
@@ -301,7 +480,7 @@ def new_session():
 
 # ============ RSS CYBER FEED TICKER ============
 RSS_FEEDS = [
-    ("Risky Biz", "https://risky.biz/feed/"),
+    ("Risky Biz", "https://risky.biz/feeds/risky-business-news"),
     ("Krebs on Security", "https://krebsonsecurity.com/feed/"),
     ("The Hacker News", "https://feeds.feedburner.com/TheHackersNews"),
     ("Schneier", "https://www.schneier.com/feed/atom/"),
@@ -313,31 +492,65 @@ RSS_FEEDS = [
 ]
 
 _rss_cache = {"items": [], "ts": 0}
+_rss_lock = threading.Lock()
 
-@app.route('/rss/feed')
-def rss_feed():
-    """Return combined cybersecurity RSS headlines as JSON. Cached for 10 minutes."""
-    now = time.time()
-    if now - _rss_cache["ts"] < 600 and _rss_cache["items"]:
-        return jsonify(_rss_cache["items"])
+def _sanitize_title(title):
+    """Normalize smart quotes, em-dashes, and other Unicode that renders
+    poorly in the small monospace ticker font on mobile."""
+    if not title:
+        return ""
+    replacements = {
+        '\u2018': "'",   # left single quote
+        '\u2019': "'",   # right single quote
+        '\u201c': '"',   # left double quote
+        '\u201d': '"',   # right double quote
+        '\u2014': '-',   # em dash
+        '\u2013': '-',   # en dash
+        '\u2026': '...', # ellipsis
+        '\u00a0': ' ',   # non-breaking space
+        '\u200b': '',    # zero-width space
+        '\ufeff': '',    # BOM
+    }
+    for old, new in replacements.items():
+        title = title.replace(old, new)
+    # Strip any remaining non-ASCII chars that would render as boxes
+    title = title.encode('ascii', 'ignore').decode('ascii')
+    return title.strip()
 
-    items = []
-    for source, url in RSS_FEEDS:
+def _fetch_rss_feeds():
+    """Fetch all RSS feeds in parallel, return interleaved items. Non-blocking."""
+    import concurrent.futures
+
+    def fetch_one(args):
+        source, url = args
         try:
-            feed = feedparser.parse(url)
-            for entry in feed.entries[:5]:  # top 5 per source
-                items.append({
+            # Use requests with a timeout, then parse the content
+            resp = requests.get(url, timeout=6, headers={'User-Agent': 'DragonPi/1.0'})
+            feed = feedparser.parse(resp.content)
+            entries = []
+            for entry in feed.entries[:5]:
+                entries.append({
                     "source": source,
-                    "title": entry.get("title", ""),
+                    "title": _sanitize_title(entry.get("title", "")),
                     "link": entry.get("link", ""),
                     "published": entry.get("published", ""),
                 })
-        except Exception as e:
-            items.append({"source": source, "title": f"[Feed unavailable: {e}]", "link": url, "published": ""})
+            return entries
+        except Exception:
+            return []  # skip broken feeds silently
+
+    all_items = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        results = executor.map(fetch_one, RSS_FEEDS)
+        for entries in results:
+            all_items.extend(entries)
+
+    if not all_items:
+        return []
 
     # Round-robin interleave: alternate sources so no two from same source appear consecutively
     grouped = {}
-    for item in items:
+    for item in all_items:
         grouped.setdefault(item["source"], []).append(item)
     interleaved = []
     sources = list(grouped.keys())
@@ -346,13 +559,151 @@ def rss_feed():
         for src in sources:
             if i < len(grouped[src]):
                 interleaved.append(grouped[src][i])
-    items = interleaved
+    return interleaved
 
-    # Sort by most recent (best effort)
-    _rss_cache["items"] = items
-    _rss_cache["ts"] = now
+@app.route('/rss/feed')
+def rss_feed():
+    """Return combined cybersecurity RSS headlines as JSON. Cached for 10 minutes."""
+    now = time.time()
+    # Return cached if fresh
+    if now - _rss_cache["ts"] < 600 and _rss_cache["items"]:
+        return jsonify(_rss_cache["items"])
+
+    # If cache is stale but non-empty, return it immediately and refresh in background
+    if _rss_cache["items"]:
+        with _rss_lock:
+            if now - _rss_cache["ts"] >= 600:
+                threading.Thread(target=_refresh_rss_cache, daemon=True).start()
+                _rss_cache["ts"] = now  # prevent repeated refresh triggers
+        return jsonify(_rss_cache["items"])
+
+    # Cold cache — fetch synchronously but with parallel fetches + timeouts
+    items = _fetch_rss_feeds()
+    if items:
+        _rss_cache["items"] = items
+        _rss_cache["ts"] = now
     return jsonify(items)
 
+def _refresh_rss_cache():
+    """Background refresh of RSS cache."""
+    try:
+        items = _fetch_rss_feeds()
+        if items:
+            _rss_cache["items"] = items
+            _rss_cache["ts"] = time.time()
+    except Exception:
+        pass
+
+# Pre-warm the RSS cache on startup so the first page load is instant
+threading.Thread(target=lambda: _refresh_rss_cache() if not _rss_cache["items"] else None, daemon=True).start()
+
+# ============ PODCAST PLAYER ============
+# Real audio feeds (verified to carry <enclosure> mp3 URLs).
+# NOTE: the old RSS_FEEDS list pointed at https://risky.biz/feed/ which 404s;
+# these are the actual podcast feeds with audio enclosures.
+PODCAST_FEEDS = [
+    {"slug": "risky-business",      "name": "Risky Business",    "icon": "fas fa-broadcast-tower", "url": "https://risky.biz/feeds/risky-business"},
+    {"slug": "risky-business-news", "name": "Srsly Risky Biz",   "icon": "fas fa-newspaper",       "url": "https://risky.biz/feeds/risky-business-news"},
+    {"slug": "darknet-diaries",     "name": "Darknet Diaries",   "icon": "fas fa-skull",           "url": "https://feeds.megaphone.fm/darknetdiaries"},
+    {"slug": "smashing-security",   "name": "Smashing Security", "icon": "fas fa-shield-halved",   "url": "https://smashingsecurity.libsyn.com/rss"},
+]
+_podcast_cache = {}  # slug -> {"episodes": [...], "ts": float, "name": str}
+
+def _fmt_dur(secs):
+    if not secs: return ""
+    secs = int(secs)
+    h, rem = divmod(secs, 3600)
+    m, s = divmod(rem, 60)
+    return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
+
+def _parse_duration(d):
+    """itunes_duration may be seconds (int/float) or 'HH:MM:SS' / 'MM:SS'."""
+    if not d: return 0, ""
+    s = str(d).strip()
+    if ":" in s:
+        try:
+            secs = 0
+            for p in s.split(":"):
+                secs = secs * 60 + int(float(p))
+            return secs, _fmt_dur(secs)
+        except Exception:
+            return 0, s
+    try:
+        secs = int(float(s))
+    except Exception:
+        return 0, s
+    return secs, _fmt_dur(secs)
+
+def _strip_html(s):
+    import re
+    if not s: return ""
+    s = re.sub(r"<[^>]+>", " ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+@app.route('/api/podcasts')
+def api_podcasts():
+    """List available podcasts with live episode counts (when cached)."""
+    now = time.time()
+    out = []
+    for p in PODCAST_FEEDS:
+        c = _podcast_cache.get(p["slug"])
+        fresh = c and now - c["ts"] < 1800
+        out.append({
+            "slug": p["slug"],
+            "name": p["name"],
+            "icon": p["icon"],
+            "count": len(c["episodes"]) if fresh else None,
+        })
+    return jsonify(out)
+
+@app.route('/api/podcast/<slug>')
+def api_podcast_feed(slug):
+    """Return up to 50 audio episodes (newest-first) for a podcast. Cached 30min."""
+    now = time.time()
+    pod = next((p for p in PODCAST_FEEDS if p["slug"] == slug), None)
+    if not pod:
+        return jsonify({"error": "unknown podcast"}), 404
+    c = _podcast_cache.get(slug)
+    if c and now - c["ts"] < 1800 and c["episodes"]:
+        return jsonify({"slug": slug, "name": pod["name"], "episodes": c["episodes"]})
+
+    episodes = []
+    try:
+        feed = feedparser.parse(pod["url"])
+        for e in feed.entries:
+            audio = ""
+            for en in e.get("enclosures", []):
+                h = en.get("href", "") or ""
+                t = (en.get("type", "") or "").lower()
+                if h.startswith("http") and ("audio" in t or h.lower().endswith(".mp3")):
+                    audio = h; break
+            if not audio:  # fallback: rel=enclosure in <links>
+                for l in e.get("links", []):
+                    if l.get("rel") == "enclosure" and (l.get("href", "") or "").startswith("http"):
+                        audio = l["href"]; break
+            if not audio:
+                continue
+            dur_sec, dur_str = _parse_duration(e.get("itunes_duration"))
+            episodes.append({
+                "title":   _strip_html(e.get("title", "Untitled")),
+                "summary": _strip_html(e.get("summary", ""))[:320],
+                "published": e.get("published", ""),
+                "audio":   audio,
+                "duration": dur_str,
+                "seconds": dur_sec,
+                "link":    e.get("link", ""),
+            })
+            if len(episodes) >= 50:
+                break
+    except Exception as ex:
+        return jsonify({"error": f"feed parse failed: {ex}"}), 502
+
+    if not episodes:
+        return jsonify({"error": "no audio episodes found in feed"}), 502
+
+    _podcast_cache[slug] = {"episodes": episodes, "ts": now}
+    return jsonify({"slug": slug, "name": pod["name"], "episodes": episodes})
+
 if __name__ == '__main__':
-    print(f"DragonAI on :{os.environ.get('PORT',5000)} | {OPENCODE_MODEL}")
+    print(f"DragonAI on :{os.environ.get('PORT',5000)} | models={OPENCODE_MODELS}")
     app.run(host='127.0.0.1', port=int(os.environ.get("PORT", 5000)), debug=False, threaded=True)

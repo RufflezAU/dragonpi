@@ -16,11 +16,15 @@ echo "=================="
 # Create timestamped backup before updating
 echo "Backing up current state..."
 mkdir -p "$BACKUP_PATH"
-for f in /var/www/homer/assets/config.yml /var/www/homer/index.html \
-         /opt/dragonpi/chatbot/app.py /opt/dragonpi/chatbot/templates/index.html \
+for f in /opt/dragonpi/dashboard/config.yml \
+         /opt/dragonpi/chatbot/app.py \
+         /opt/dragonpi/chatbot/templates/index.html \
+         /opt/dragonpi/chatbot/templates/dashboard.html \
+         /opt/dragonpi/chatbot/templates/podcast.html \
          /etc/nginx/sites-available/dragonpi.conf \
          /etc/systemd/system/chatbot.service /etc/systemd/system/ttyd.service \
          /usr/local/bin/dragonpi-shell /usr/local/bin/dragonpi-update \
+         /usr/local/bin/dragonpi-screenshot \
          /usr/local/bin/dragonpi-guide-*; do
     [ -f "$f" ] && cp --parents "$f" "$BACKUP_PATH/" 2>/dev/null
 done
@@ -34,25 +38,56 @@ ls -1d "$BACKUP_DIR"/*/ 2>/dev/null | sort -r | tail -n +$((MAX_BACKUPS+1)) | wh
     echo "  Pruned old backup: $(basename $d)"
 done
 
-# Pull latest from GitHub
+# ── Pre-flight: verify secrets are still gitignored ──
 echo ""
-echo "Pulling latest from GitHub..."
+echo "🔒 Git safety check..."
 cd "$REPO_DIR"
-git pull origin main 2>&1 | tail -2
+
+SECRET_FILES=("secrets.md" "AGENTS.md")
+SECRET_LEAK=0
+for sf in "${SECRET_FILES[@]}"; do
+    if git check-ignore "$sf" >/dev/null 2>&1; then
+        echo "  ✅ $sf is gitignored"
+    else
+        echo "  ❌ $sf is NOT gitignored — aborting!"
+        SECRET_LEAK=1
+    fi
+done
+# Also check no tracked files contain the actual password (read from gitignored secrets.md)
+if [ -f "$REPO_DIR/secrets.md" ]; then
+    PWD_VAL=$(grep -i 'password' "$REPO_DIR/secrets.md" | grep -v '^#' | grep -oE '[A-Za-z0-9!@#$%^&*()_+=-]{8,}' | head -1)
+    if [ -n "$PWD_VAL" ] && git grep -nF "$PWD_VAL" -- ':!*.gitignore' ':!*.md' ':!scripts/dragonpi-update' >/dev/null 2>&1; then
+        echo "  ❌ CREDENTIALS FOUND in tracked files — aborting!"
+        SECRET_LEAK=1
+    fi
+fi
+if [ "$SECRET_LEAK" -ne 0 ]; then
+    echo "  🛑 Update aborted — fix gitignore or remove secrets from tracked files first."
+    exit 1
+fi
+echo "  ✅ No secret leaks detected"
+
+# Deploy from local repo (NO git pull — Pi has live state that must not be synced from GitHub)
+echo ""
+echo "Deploying from local repo..."
+cd "$REPO_DIR"
 NEW_HASH=$(git rev-parse HEAD 2>/dev/null | cut -c1-7)
-echo "  Now at: $NEW_HASH"
+echo "  Deploying commit: $NEW_HASH"
 
 # Deploy non-sensitive files
 echo ""
 echo "Deploying..."
 sudo cp "$REPO_DIR/scripts/dragonpi-shell" /usr/local/bin/dragonpi-shell
 sudo cp "$REPO_DIR/scripts/dragonpi-update" /usr/local/bin/dragonpi-update
+sudo cp "$REPO_DIR/scripts/dragonpi-screenshot" /usr/local/bin/dragonpi-screenshot
 sudo cp "$REPO_DIR/scripts/guides/"* /usr/local/bin/ 2>/dev/null || true
-sudo cp "$REPO_DIR/chatbot/templates/index.html" /opt/dragonpi/chatbot/templates/index.html
-sudo cp "$REPO_DIR/homer/index.html" /var/www/homer/index.html
+# Templates + config live at their runtime location (REPO_DIR is /opt/dragonpi); no copy needed
 sudo cp "$REPO_DIR/nginx/dragonpi.conf" /etc/nginx/sites-available/dragonpi
 sudo cp "$REPO_DIR/services/chatbot.service" /etc/systemd/system/chatbot.service
-sudo chmod +x /usr/local/bin/dragonpi-shell /usr/local/bin/dragonpi-guide-* /usr/local/bin/dragonpi-update
+sudo chmod +x /usr/local/bin/dragonpi-shell /usr/local/bin/dragonpi-guide-* /usr/local/bin/dragonpi-update /usr/local/bin/dragonpi-screenshot
+
+# Make sure new scripts are executable
+sudo chmod +x "$REPO_DIR/scripts/dragonpi-screenshot" 2>/dev/null || true
 
 # Reload
 sudo nginx -t 2>/dev/null && sudo systemctl reload nginx

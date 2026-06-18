@@ -3,6 +3,12 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  📝 Crunch — Wordlist Generator    ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Generates custom wordlists by combination —"
+echo "  specify a character set and length range, and crunch produces every"
+echo "  possible combination. Essential when you know the password policy"
+echo "  (e.g., '4-digit PIN', 'starts with capital + 6 lowercase'). Pipe"
+echo "  directly into hydra/hashcat/john without saving to disk."
+echo
 echo -e "\033[33mGenerate wordlist:\033[0m"
 echo "  crunch 6 8 abc123 -o words.txt"
 echo "  crunch 8 8 -t @@@@%%%% -o pin.txt"
@@ -10,6 +16,9 @@ echo
 echo -e "\033[33mSyntax:\033[0m"
 echo "  crunch MIN MAX CHARSET [options]"
 echo "  @ = lowercase, , = uppercase, % = numbers, ^ = symbols"
+echo
+echo -e "\033[33mPipe directly to another tool:\033[0m"
+echo "  crunch 4 4 0123456789 | hydra -l admin -p '' target ssh"
 echo
 echo -e "\033[33mExample - 4-digit PINs:\033[0m"
 echo "  crunch 4 4 0123456789 -o pins.txt"

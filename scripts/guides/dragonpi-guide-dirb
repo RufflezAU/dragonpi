@@ -1,0 +1,33 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  📂 Dirb — Web Content Scanner      ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Discovers hidden files and directories on a web"
+echo "  server by brute-forcing from a wordlist. Finds admin panels, config"
+echo "  files, backup archives, and forgotten pages that shouldn't be public."
+echo "  Simple, reliable, and comes with built-in wordlists. A classic first"
+echo "  step when attacking a web app — 'what's on this server that they"
+echo "  don't link to?'"
+echo
+echo -e "\033[33mBasic scan:\033[0m"
+echo "  dirb http://target.com/"
+echo "  dirb http://target.com/ /usr/share/wordlists/dirb/common.txt"
+echo
+echo -e "\033[33mScan with extensions:\033[0m"
+echo "  dirb http://target.com/ -X .php,.html,.txt,.bak"
+echo "  dirb http://target.com/ -X .php          # PHP files only"
+echo
+echo -e "\033[33mRecursive scan (follow found dirs):\033[0m"
+echo "  dirb http://target.com/ -r                # -r = recursive"
+echo
+echo -e "\033[33mWith cookies (authenticated scan):\033[0m"
+echo "  dirb http://target.com/ -c session_cookie.txt"
+echo
+echo -e "\033[33mKey flags:\033[0m"
+echo "  -X EXT     File extensions to append (.php,.html,.bak)"
+echo "  -r         Recursive (scan found directories)"
+echo "  -c FILE    Cookie file (for authed scanning)"
+echo "  -o FILE    Output to file"
+echo "  -w         Don't stop on warning messages"
+echo -e "\033[90m──────────────────────────────────────\033[0m"

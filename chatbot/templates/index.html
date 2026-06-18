@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DragonAI — OpenCode Go | DragonPi</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:     #0a0d0b;
@@ -18,7 +20,7 @@
   --amber:  #f59e0b;
   --red:    #ef4444;
   --cyan:   #22d3ee;
-  --font:   'SF Mono','Fira Code','JetBrains Mono','Consolas',monospace;
+  --font:   'JetBrains Mono','SF Mono','Fira Code','Consolas','Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',monospace;
   --radius: 6px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -175,6 +177,60 @@ body{
   animation:slideIn .3s ease;
 }
 @keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── Mobile responsive ── */
+
+/* Mobile (≤640px) */
+@media(max-width:640px){
+  body{font-size:13px}
+  .header{padding:8px 12px;gap:6px}
+  .header .dot{width:8px;height:8px}
+  .header .title{font-size:.7em;margin-left:4px}
+  .header-right{gap:4px}
+  .header-right button{padding:5px 8px;font-size:.68em}
+  /* Chat area — tighter padding */
+  .chat-container{padding:12px 8px;gap:10px}
+  /* Messages: wider on mobile (less wasted space) */
+  .message{max-width:95%;gap:6px}
+  .message .prompt{font-size:.68em;margin-top:2px}
+  /* Bubbles: more padding, better text wrapping */
+  .bubble{padding:9px 11px;line-height:1.5;font-size:.88em;word-break:break-word;overflow-wrap:break-word}
+  /* Code blocks: smaller font, horizontal scroll */
+  .bubble pre{font-size:.76em;padding:8px;margin:5px 0}
+  .bubble pre .copy-btn{padding:1px 6px;font-size:.66em;top:4px;right:5px}
+  .bubble code{font-size:.85em;padding:1px 3px}
+  /* Tables: scroll horizontally instead of breaking layout */
+  .bubble table{font-size:.76em;display:block;overflow-x:auto;max-width:100%}
+  .bubble th,.bubble td{padding:4px 6px;white-space:nowrap}
+  /* Welcome */
+  .welcome{padding:20px 12px}
+  .welcome .logo{font-size:2.8em;margin-bottom:8px}
+  .welcome h2{font-size:1.05em}
+  .welcome .suggestions{gap:5px;margin-top:12px}
+  .welcome .suggestion{padding:5px 11px;font-size:.72em}
+  /* Input */
+  .input-area{padding:8px 10px}
+  .input-row{gap:6px}
+  .input-row textarea{font-size:.82em;padding:7px 10px;min-height:38px}
+  .input-row button{padding:7px 12px;font-size:.74em}
+  .input-hint{font-size:.58em;gap:10px}
+  .input-hint span{white-space:nowrap}
+  /* Toast */
+  .toast{bottom:60px;right:12px;left:12px;text-align:center}
+}
+
+/* Small phones (≤400px) */
+@media(max-width:400px){
+  .header .title{font-size:.64em}
+  .header-right button{padding:5px 7px;font-size:.64em}
+  .welcome .logo{font-size:2.2em}
+  .welcome .suggestions{flex-direction:column;align-items:stretch}
+  .welcome .suggestion{text-align:center}
+  .input-hint{flex-direction:column;gap:3px}
+  /* Hide prompt prefix on tiny screens to save space */
+  .message .prompt{display:none}
+  .message{max-width:100%}
+}
 </style>
 </head>
 <body>
@@ -197,6 +253,9 @@ body{
     <h2>DragonAI Terminal</h2>
     <p style="color:var(--text2);font-size:0.85em">OpenCode Go + DeepSeek V4 Pro. Ask me to run tools, scan networks, or manage your DragonPi.</p>
     <div class="suggestions">
+      <div class="suggestion" onclick="window.location='/pentest'" style="border-color:var(--green);color:var(--green)"><i class="fas fa-crosshairs"></i> Pentest Console</div>
+      <div class="suggestion" onclick="window.location='/pentest?mode=external'"><i class="fas fa-globe"></i> External Pentest</div>
+      <div class="suggestion" onclick="window.location='/pentest?mode=internal'"><i class="fas fa-network-wired"></i> Internal Pentest</div>
       <div class="suggestion" onclick="sendSuggestion('Run an nmap scan of my local network')">🔍 nmap scan</div>
       <div class="suggestion" onclick="sendSuggestion('Show system status')">📊 system</div>
       <div class="suggestion" onclick="sendSuggestion('What web testing tools are installed?')">🌐 web tools</div>
@@ -236,6 +295,9 @@ function clearChat(){
       <h2>DragonAI Terminal</h2>
       <p style="color:var(--text2);font-size:0.85em">OpenCode Go + DeepSeek V4 Pro</p>
       <div class="suggestions">
+        <div class="suggestion" onclick="window.location='/pentest'" style="border-color:var(--green);color:var(--green)"><i class="fas fa-crosshairs"></i> Pentest Console</div>
+        <div class="suggestion" onclick="window.location='/pentest?mode=external'"><i class="fas fa-globe"></i> External Pentest</div>
+        <div class="suggestion" onclick="window.location='/pentest?mode=internal'"><i class="fas fa-network-wired"></i> Internal Pentest</div>
         <div class="suggestion" onclick="sendSuggestion('Run an nmap scan of my local network')">🔍 nmap scan</div>
         <div class="suggestion" onclick="sendSuggestion('Show system status')">📊 system</div>
         <div class="suggestion" onclick="sendSuggestion('What web testing tools are installed?')">🌐 web tools</div>

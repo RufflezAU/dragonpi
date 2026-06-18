@@ -1,7 +1,13 @@
 #!/bin/bash
 echo -e "\033[32m╔══════════════════════════════════════╗"
-echo -e "║  🔐 Hashcat — Password Cracking     ║"
+echo -e "║  🔐 Hashcat — Password Cracking    ║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m The world's fastest password cracker — supports"
+echo "  300+ hash types and multiple attack modes (wordlist, mask, combinator,"
+echo "  hybrid). Use it to crack hashes extracted from a target. On the RPi"
+echo "  (CPU-only, no GPU), use small wordlists and simpler hash types (MD5,"
+echo "  NTLM). Still faster than John for many formats."
 echo
 echo -e "\033[33mBasic crack:\033[0m"
 echo "  hashcat -m 0 -a 0 hash.txt wordlist.txt"

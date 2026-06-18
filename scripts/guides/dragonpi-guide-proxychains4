@@ -3,6 +3,12 @@ echo -e "\033[32m╔════════════════════
 echo -e "║  ⛓ Proxychains — Force Through Proxy║"
 echo -e "╚══════════════════════════════════════╝\033[0m"
 echo
+echo -e "\033[33mWhy use it:\033[0m Wraps ANY command to route its traffic through"
+echo "  a proxy chain (SOCKS, HTTP, Tor). Hides your real IP, chains multiple"
+echo "  proxies for untraceability, and pivots through compromised hosts."
+echo "  Essential for stealth: scan through Tor, attack through a SOCKS proxy"
+echo "  on a compromised machine, or chain 3 proxies to bounce traffic."
+echo
 echo -e "\033[33mRun any command through proxy:\033[0m"
 echo "  proxychains4 nmap -sT 10.0.0.1"
 echo "  proxychains4 curl http://target.com"
