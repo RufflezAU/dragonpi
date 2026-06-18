@@ -1,5 +1,7 @@
 # 🐉 DragonPi — Cybersecurity Toolkit for Raspberry Pi
 
+> ⚠️ **Vibe Coded Disclaimer**: This project was built entirely with AI assistance (OpenCode Go + DeepSeek V4 Pro) as an experiment to see what could be accomplished. **Use at your own risk.** It is 100% vibe coded — no manual coding, no guarantees, no warranties. If it breaks, roll it back. If it works, you're welcome.
+
 A complete, ready-to-deploy cybersecurity platform for Raspberry Pi 4/5. Web dashboard, AI chatbot, 40+ tools, one-click launchers — everything a security professional needs.
 
 ## 📡 Quick Install
