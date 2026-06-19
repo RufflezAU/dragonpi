@@ -80,6 +80,51 @@ tr:nth-child(even) td{background:var(--bg2)}
 .score-bar{background:var(--border);height:8px;border-radius:4px;overflow:hidden;margin-top:4px}
 .score-bar > div{height:100%;border-radius:4px;transition:width .5s}
 
+/* ── Executive Summary Charts (CSS-only, PDF-safe) ── */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+@media(max-width:600px){.charts-grid{grid-template-columns:1fr}}
+
+/* Severity bar chart */
+.sev-chart{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.sev-chart h4{font-size:.8em;color:var(--green);margin-bottom:12px;letter-spacing:.05em;text-transform:uppercase}
+.sev-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sev-bar-row .lbl{width:80px;font-size:.72em;color:var(--text2);text-align:right;flex-shrink:0}
+.sev-bar-row .bar-track{flex:1;background:var(--bg);height:18px;border-radius:4px;overflow:hidden}
+.sev-bar-row .bar-fill{height:100%;border-radius:4px;min-width:2px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:.65em;font-weight:700;color:#0a0d0b}
+.sev-bar-row .count{width:30px;font-size:.78em;font-weight:700;color:var(--text);text-align:left;flex-shrink:0}
+.bar-crit{background:var(--red)}
+.bar-high{background:var(--amber)}
+.bar-med{background:#eab308}
+.bar-low{background:var(--green2)}
+.bar-info{background:var(--text2)}
+
+/* Risk gauge */
+.gauge-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.gauge-card h4{font-size:.8em;color:var(--green);margin-bottom:12px;letter-spacing:.05em;text-transform:uppercase}
+.gauge{position:relative;width:160px;height:160px;margin:0 auto}
+.gauge-bg{width:100%;height:100%;border-radius:50%;background:conic-gradient(var(--red) 0deg 45deg,var(--amber) 45deg 90deg,#eab308 90deg 180deg,var(--green2) 180deg 270deg,var(--green) 270deg 360deg);position:relative}
+.gauge-mask{position:absolute;inset:20px;background:var(--bg2);border-radius:50%}
+.gauge-needle{position:absolute;bottom:50%;left:50%;width:3px;height:40%;background:var(--text);transform-origin:bottom center;border-radius:2px}
+.gauge-value{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.gauge-value .score{font-size:2em;font-weight:700;line-height:1}
+.gauge-value .lbl{font-size:.6em;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.gauge-legend{display:flex;justify-content:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+.gauge-legend span{font-size:.6em;padding:2px 8px;border-radius:8px}
+.legend-crit{background:#2a1010;color:var(--red)}
+.legend-high{background:#2a1810;color:var(--amber)}
+.legend-med{background:#2a2410;color:#eab308}
+.legend-low{background:#1a2418;color:var(--green2)}
+.legend-ok{background:var(--bg3);color:var(--green)}
+
+/* Compliance framework bars */
+.comp-bars{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;grid-column:1/-1}
+.comp-bars h4{font-size:.8em;color:var(--green);margin-bottom:12px;letter-spacing:.05em;text-transform:uppercase}
+.comp-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.comp-row .fw{width:100px;font-size:.72em;color:var(--text2);text-align:right;flex-shrink:0}
+.comp-row .track{flex:1;background:var(--bg);height:20px;border-radius:4px;overflow:hidden}
+.comp-row .fill{height:100%;border-radius:4px;min-width:2px;display:flex;align-items:center;padding-left:8px;font-size:.68em;font-weight:700;color:#0a0d0b}
+.comp-row .pct{width:40px;font-size:.75em;font-weight:700;color:var(--text);text-align:left;flex-shrink:0}
+
 /* Finding card */
 .finding{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin:10px 0;overflow:hidden}
 .finding-head{padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
@@ -244,6 +289,70 @@ tr:nth-child(even) td{background:var(--bg2)}
     <span class="risk-badge risk-{{ compliance.overall_risk }}">Overall Risk: {{ compliance.overall_risk }}</span>
     <span style="margin-left:16px;color:var(--text2);font-size:.9em">Risk Score: <strong style="color:var(--green)">{{ compliance.risk_score }}/100</strong></span>
     {% if compliance.avg_cvss %}<span style="margin-left:16px;color:var(--text2);font-size:.9em">Avg CVSS: <strong style="color:var(--amber)">{{ compliance.avg_cvss }}</strong></span>{% endif %}
+  </div>
+
+  <!-- ── Visual Charts ── -->
+  <div class="charts-grid">
+    <!-- Severity Distribution Bar Chart -->
+    {% set max_sev = [compliance.severity_counts.Critical, compliance.severity_counts.High, compliance.severity_counts.Medium, compliance.severity_counts.Low, compliance.severity_counts.Informational, 1] | max %}
+    <div class="sev-chart">
+      <h4>&#128202; Severity Distribution</h4>
+      {% set sevs = [("Critical", compliance.severity_counts.Critical, "bar-crit"), ("High", compliance.severity_counts.High, "bar-high"), ("Medium", compliance.severity_counts.Medium, "bar-med"), ("Low", compliance.severity_counts.Low, "bar-low"), ("Informational", compliance.severity_counts.Informational, "bar-info")] %}
+      {% for lbl, cnt, cls in sevs %}
+      {% set pct = (cnt / max_sev * 100) | int if max_sev > 0 else 0 %}
+      <div class="sev-bar-row">
+        <span class="lbl">{{ lbl }}</span>
+        <div class="bar-track"><div class="bar-fill {{ cls }}" style="width:{{ pct }}%">{% if cnt > 0 %}{{ cnt }}{% endif %}</div></div>
+        <span class="count">{{ cnt }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Risk Score Radial Gauge -->
+    {% set score = compliance.risk_score | int %}
+    {% set gauge_color = "#ef4444" if score >= 75 else "#f59e0b" if score >= 50 else "#eab308" if score >= 25 else "#22c55e" %}
+    {% set gauge_deg = (score / 100 * 360) | int %}
+    <div class="gauge-card">
+      <h4>&#128203; Cadence Risk Score</h4>
+      <div class="gauge">
+        <div class="gauge-bg"></div>
+        <div class="gauge-mask"></div>
+        <div class="gauge-needle" style="transform:rotate({{ gauge_deg }}deg)"></div>
+        <div class="gauge-value">
+          <span class="score" style="color:{{ gauge_color }}">{{ score }}</span>
+          <span class="lbl">/100 &middot; {{ compliance.overall_risk }}</span>
+        </div>
+      </div>
+      <div class="gauge-legend">
+        <span class="legend-crit">0-25 Crit</span>
+        <span class="legend-high">26-50 High</span>
+        <span class="legend-med">51-75 Med</span>
+        <span class="legend-low">76-90 Low</span>
+        <span class="legend-ok">91-100 OK</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compliance Framework Bar Chart -->
+  <div class="charts-grid" style="margin-top:0">
+    <div class="comp-bars">
+      <h4>&#128220; Framework Compliance Cadence</h4>
+      {% set frameworks = [
+        ("ISO 27001:2022", compliance.iso_score, "#4ade80"),
+        ("NIST CSF", compliance.nist_overall or 50, "#22d3ee"),
+        ("ASD Essential 8", compliance.e8_overall or 50, "#c084fc"),
+        ("PCI DSS", compliance.pci_score or 50, "#f59e0b"),
+        ("CIS Controls", compliance.cis_score or 50, "#22c55e"),
+        ("Weighted Overall", compliance.weighted_compliance, "#4ade80")
+      ] %}
+      {% for name, pct, color in frameworks %}
+      <div class="comp-row">
+        <span class="fw">{{ name }}</span>
+        <div class="track"><div class="fill" style="width:{{ pct }}%;background:{{ color }}">{% if pct >= 20 %}{{ pct }}%{% endif %}</div></div>
+        <span class="pct">{{ pct }}%</span>
+      </div>
+      {% endfor %}
+    </div>
   </div>
 
   <div class="sev-grid">
