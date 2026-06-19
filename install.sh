@@ -23,6 +23,13 @@ apt install -y -qq \
     avahi-daemon avahi-utils ufw ttyd cockpit htop btop tmux \
     dnsutils golang-go apt-transport-https ca-certificates
 
+# ── Tailscale (optional remote access — skip with TAILSCALE=0) ──
+if [ "${TAILSCALE:-1}" != "0" ] && ! command -v tailscale &>/dev/null; then
+    echo "🔗 Installing Tailscale for remote access..."
+    curl -fsSL https://tailscale.com/install.sh | sh
+    echo "   Run 'sudo tailscale up' to connect after install."
+fi
+
 # ── Python deps ──
 echo ""
 echo "🐍 Installing Python packages..."

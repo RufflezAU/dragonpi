@@ -35,6 +35,30 @@ After install, open `http://dragonpi.local` in your browser.
 > 
 > Get a key at [opencode.ai](https://opencode.ai). The free tier works without any key.
 
+## 🌐 Optional: Remote Access via Tailscale
+
+The installer includes Tailscale by default. Skip it with `TAILSCALE=0`:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/RufflezAU/dragonpi/main/install.sh | TAILSCALE=0 sudo bash
+```
+
+After install, connect your Pi to your tailnet:
+
+```bash
+sudo tailscale up
+```
+
+Then install Tailscale on your laptop (macOS App Store, or `curl -fsSL https://tailscale.com/install.sh | sh`). Log in with the same account and you can access your Pi from anywhere:
+
+```
+http://<tailscale-ip>          # Dashboard
+http://<tailscale-ip>/pentest   # Pentest console
+ssh dragonpi@<tailscale-ip>     # SSH
+```
+
+Find your Pi's Tailscale IP with `tailscale status`. Pentest tools automatically use the physical network interface — Tailscale VPN traffic is never scanned.
+
 ## 🖥 Features
 
 | Feature | Description |
@@ -54,6 +78,7 @@ After install, open `http://dragonpi.local` in your browser.
 | **RSS News Ticker** | Scrolling cybersecurity headlines from 9 sources |
 | **Threat Intelligence** | Live CVE feed, AlienVault OTX pulses, attack map |
 | **Podcast Player** | Built-in player for cybersecurity podcasts (Risky Business, Darknet Diaries, Smashing Security) |
+| **Remote Access** | Optional Tailscale VPN — access your Pi securely from anywhere, no port forwarding needed |
 | **Cockpit** | System management web UI on port 9090 |
 
 ## 🛠 Tools Included (50+)
