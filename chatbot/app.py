@@ -187,6 +187,56 @@ def pentest_start():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route('/api/pentest/batch', methods=['POST'])
+def pentest_batch():
+    """Launch multiple pentests against a list of targets. Returns list of job IDs."""
+    if not PENTEST_OK:
+        return jsonify({"error": "Pentest engine not available"}), 500
+    data = request.get_json(silent=True) or {}
+    mode = data.get('mode', 'external')
+    targets = data.get('targets', [])
+    project = (data.get('project') or '').strip() or 'DragonPi'
+    opts = data.get('opts') or {}
+    if not targets or not isinstance(targets, list):
+        return jsonify({"error": "targets list required"}), 400
+    jobs = []
+    for t in targets:
+        t = (t or '').strip()
+        if not t:
+            continue
+        try:
+            jid = pt.start_job(mode, t, opts, project=project)
+            jobs.append({"target": t, "job_id": jid})
+        except Exception as e:
+            jobs.append({"target": t, "error": str(e)})
+    return jsonify({"mode": mode, "project": project, "jobs": jobs, "total": len(jobs)})
+
+
+@app.route('/api/pentest/data/<job_id>')
+def pentest_job_data(job_id):
+    """Get the raw data from a completed pentest (hosts, subdomains, URLs, etc.)"""
+    if not PENTEST_OK:
+        return jsonify({"error": "Pentest engine not available"}), 500
+    job = pt.get_job(job_id)
+    if not job:
+        return jsonify({"error": "job not found"}), 404
+    if job.get("status") not in ("complete", "error", "stopped"):
+        return jsonify({"error": "job still running"}), 400
+    # Return discovered targets for re-scanning
+    data = job.get("data", {})
+    return jsonify({
+        "job_id": job_id,
+        "mode": job.get("mode"),
+        "target": job.get("target"),
+        "project": job.get("project"),
+        "subdomains": data.get("subdomains", []),
+        "hosts": [{"ip": h.get("ip", ""), "hostname": h.get("hostname", ""),
+                    "ports": [p.get("port", "") for p in h.get("ports", [])]} for h in data.get("hosts", [])],
+        "emails": data.get("emails", []),
+        "web_urls": data.get("web_urls", []),
+    })
+
 @app.route('/api/pentest/status/<job_id>')
 def pentest_status(job_id):
     """Poll engagement progress (log lines, current step, reports)."""
