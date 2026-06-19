@@ -12,6 +12,29 @@ curl -sSL https://raw.githubusercontent.com/RufflezAU/dragonpi/main/install.sh |
 
 After install, open `http://dragonpi.local` in your browser.
 
+> 💡 **Recommended: Configure OpenCode API Key**
+> 
+> The chatbot uses `deepseek-v4-flash-free` by default (no key needed).
+> For better results — especially pentest self-healing and complex analysis —
+> add a Pro API key for `deepseek-v4-pro`. The system auto-falls back to free
+> if Pro is unavailable.
+> 
+> ```bash
+> mkdir -p ~/.opencode
+> cat > ~/.opencode/config.json << 'EOF'
+> {
+>   "providers": {
+>     "opencode-go": {
+>       "api_key": "YOUR_API_KEY_HERE"
+>     }
+>   }
+> }
+> EOF
+> sudo systemctl restart chatbot
+> ```
+> 
+> Get a key at [opencode.ai](https://opencode.ai). The free tier works without any key.
+
 ## 🖥 Features
 
 | Feature | Description |
