@@ -213,6 +213,17 @@ def pentest_batch():
     return jsonify({"mode": mode, "project": project, "jobs": jobs, "total": len(jobs)})
 
 
+@app.route('/api/pentest/log/<job_id>')
+def pentest_job_log(job_id):
+    """Download the raw terminal log for a completed pentest job."""
+    if not PENTEST_OK:
+        return jsonify({"error": "Pentest engine not available"}), 500
+    job = pt.get_job(job_id)
+    if not job:
+        return jsonify({"error": "job not found"}), 404
+    return jsonify({"job_id": job_id, "log": "\n".join(job.get("log", [])), "lines": len(job.get("log", []))})
+
+
 @app.route('/api/pentest/data/<job_id>')
 def pentest_job_data(job_id):
     """Get the raw data from a completed pentest (hosts, subdomains, URLs, etc.)"""
