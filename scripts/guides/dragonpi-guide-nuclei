@@ -1,0 +1,20 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  ☢️  Nuclei — Vulnerability Scanner  ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Fast template-based vulnerability scanner with 8000+"
+echo "  community templates. Detects CVEs, misconfigurations, exposed files,"
+echo "  default credentials, and security gaps. Essential for automated vuln assessment."
+echo
+echo -e "\033[33mQuick Scans:\033[0m"
+echo "  nuclei -u https://example.com                    # Single URL"
+echo "  nuclei -l targets.txt                            # List of URLs"
+echo "  nuclei -u https://example.com -s critical,high   # Critical/high only"
+echo "  nuclei -u https://example.com -t cves/           # CVE templates only"
+echo "  nuclei -u https://example.com -t exposures/      # Misconfigurations"
+echo "  nuclei -update-templates                         # Update to latest"
+echo
+echo -e "\033[33mExample — scan a web app:\033[0m"
+echo "  nuclei -u https://example.com -s critical,high,medium -o results.json"
+echo

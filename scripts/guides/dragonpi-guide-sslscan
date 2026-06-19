@@ -1,0 +1,19 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  📜 sslscan — SSL Cipher Scanner    ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Fast SSL/TLS cipher suite scanner."
+echo "  Lists all supported cipher suites, checks for weak ciphers"
+echo "  (RC4, 3DES, EXPORT), and verifies certificate details."
+echo
+echo -e "\033[33mQuick Scans:\033[0m"
+echo "  sslscan example.com                           # Default scan"
+echo "  sslscan example.com:443                       # Specific port"
+echo "  sslscan --no-colour example.com               # Clean output"
+echo "  sslscan --show-certificate example.com         # Show cert details"
+echo "  sslscan --show-client-cas example.com          # Client CAs"
+echo
+echo -e "\033[33mExample:\033[0m"
+echo "  sslscan --no-colour example.com:443 | grep -E 'Accepted|Preferred'"
+echo

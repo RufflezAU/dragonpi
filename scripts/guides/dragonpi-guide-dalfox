@@ -1,0 +1,19 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  💉 Dalfox — XSS Scanner            ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Powerful XSS (Cross-Site Scripting) scanner."
+echo "  Parameter analysis, DOM-based XSS detection, and PoC generation."
+echo "  Finds reflected, stored, and DOM XSS in web applications."
+echo
+echo -e "\033[33mQuick Scans:\033[0m"
+echo "  dalfox url https://example.com/page?q=test       # Single URL"
+echo "  dalfox url https://example.com/page?q=test --cookie 'session=xxx'"
+echo "  dalfox url https://example.com/page?q=test -b worker -o results.json"
+echo "  dalfox file urls.txt                             # From file"
+echo "  dalfox url https://example.com --format json     # JSON output"
+echo
+echo -e "\033[33mExample:\033[0m"
+echo "  dalfox url 'https://example.com/search?q=test' -o xss-results.json"
+echo

@@ -1,0 +1,20 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🔒 testssl.sh — TLS/SSL Analyzer   ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Deep SSL/TLS protocol and cipher analysis."
+echo "  Checks protocols (TLS 1.0-1.3), cipher suites, certificate validity,"
+echo "  HSTS, HPKP, vulnerabilities (Heartbleed, POODLE, BEAST, etc)."
+echo
+echo -e "\033[33mQuick Scans:\033[0m"
+echo "  testssl https://example.com                    # Full test"
+echo "  testssl --quick https://example.com            # Quick scan"
+echo "  testssl --protocols https://example.com         # Protocols only"
+echo "  testssl --ciphers https://example.com           # Ciphers only"
+echo "  testssl --json https://example.com              # JSON output"
+echo "  testssl -U https://example.com                  # All known vulns"
+echo
+echo -e "\033[33mExample:\033[0m"
+echo "  testssl --jsonfile results.json https://example.com"
+echo

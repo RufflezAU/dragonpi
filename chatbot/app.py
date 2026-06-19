@@ -268,6 +268,10 @@ TOOL_CMD = {
     'psexec.py':'psexec.py --help', 'wmiexec.py':'wmiexec.py --help',
     'evil-winrm':'evil-winrm --help', 'pwncat-cs':'pwncat-cs --help',
     'coercer':'/usr/local/bin/dragonpi-guide-coercer',
+    'nuclei':'/usr/local/bin/dragonpi-guide-nuclei', 'naabu':'/usr/local/bin/dragonpi-guide-naabu',
+    'httpx':'/usr/local/bin/dragonpi-guide-httpx', 'dalfox':'/usr/local/bin/dragonpi-guide-dalfox',
+    'lynis':'/usr/local/bin/dragonpi-guide-lynis', 'testssl':'/usr/local/bin/dragonpi-guide-testssl',
+    'sslscan':'/usr/local/bin/dragonpi-guide-sslscan',
     'htop':'htop', 'btop':'btop', 'neofetch':'fastfetch', 'tmux':'tmux --help',
 }
 

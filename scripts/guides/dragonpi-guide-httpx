@@ -1,0 +1,19 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  🌐 httpx — HTTP Probe & Tech       ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Fast HTTP probing tool. Detects live web services,"
+echo "  status codes, titles, technologies, and content length."
+echo "  Perfect for quick web reconnaissance before deeper scanning."
+echo
+echo -e "\033[33mQuick Scans:\033[0m"
+echo "  httpx -u https://example.com -title -tech-detect -status-code"
+echo "  httpx -l urls.txt -silent                         # From file"
+echo "  httpx -u https://example.com -json                # JSON output"
+echo "  httpx -u https://example.com -follow-redirects    # Follow 30x"
+echo "  httpx -u https://example.com -web-server -cdn     # Server + CDN"
+echo
+echo -e "\033[33mExample:\033[0m"
+echo "  httpx -u https://example.com -silent -title -status-code -tech-detect"
+echo

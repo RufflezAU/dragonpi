@@ -1,0 +1,19 @@
+#!/bin/bash
+echo -e "\033[32m╔══════════════════════════════════════╗"
+echo -e "║  📋 Lynis — Security Audit Tool     ║"
+echo -e "╚══════════════════════════════════════╝\033[0m"
+echo
+echo -e "\033[33mWhy use it:\033[0m Comprehensive security auditing tool for Linux."
+echo "  Tests against CIS benchmarks, provides hardening index (0-100),"
+echo "  identifies misconfigurations, missing patches, and compliance gaps."
+echo
+echo -e "\033[33mQuick Scans:\033[0m"
+echo "  lynis audit system                    # Full system audit"
+echo "  lynis audit system --quick            # Quick scan (no extended tests)"
+echo "  lynis show suggestions                # Show past suggestions"
+echo "  lynis audit system --tests-from-group malware,authentication,networking"
+echo
+echo -e "\033[33mExample:\033[0m"
+echo "  lynis audit system --quick"
+echo "  grep ^warning /var/log/lynis-report.dat | head -10"
+echo
