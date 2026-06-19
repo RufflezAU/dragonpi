@@ -278,12 +278,82 @@ tr:nth-child(even) td{background:var(--bg2)}
 <div class="section" id="exec">
   <h2>1. Executive Summary</h2>
   <p style="color:var(--text);margin-bottom:14px">
-    This report details the findings of an automated {{ mode }} penetration test conducted against
+    This report presents the findings of an automated {{ mode }} penetration test conducted against
     <strong style="color:var(--green)">{{ target }}</strong> on {{ timestamp_human }} for
     <strong style="color:var(--green)">{{ project }}</strong>. The assessment lasted approximately
     {{ duration }} seconds, utilised <strong>{{ tool_coverage | length }}</strong> security tools,
     and identified <strong>{{ total_findings }}</strong> findings.
+    {% if is_merged %}
+    <br><br>This is a <strong style="color:var(--cyan)">merged report</strong> combining external and internal assessments
+    for a complete security posture evaluation.
+    {% endif %}
   </p>
+
+  <!-- Security Posture Overview -->
+  <h3>Security Posture Assessment</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+      <div style="color:var(--red);font-size:.8em;font-weight:600;margin-bottom:6px">Areas Requiring Attention</div>
+      <div style="font-size:.85em;color:var(--text2)">
+        {% if compliance.severity_counts.Critical > 0 or compliance.severity_counts.High > 0 %}
+        <div>&#9888; {{ compliance.severity_counts.Critical + compliance.severity_counts.High }} critical/high severity findings need immediate action</div>
+        {% endif %}
+        {% if waf_detected == false %}
+        <div>&#9888; No Web Application Firewall detected — increased attack surface</div>
+        {% endif %}
+        {% if compliance.risk_score > 50 %}
+        <div>&#9888; Risk score {{ compliance.risk_score }}/100 exceeds acceptable threshold</div>
+        {% endif %}
+        {% if compliance.weighted_compliance < 70 %}
+        <div>&#9888; Compliance score {{ compliance.weighted_compliance }}% below 70% benchmark</div>
+        {% endif %}
+      </div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+      <div style="color:var(--green);font-size:.8em;font-weight:600;margin-bottom:6px">Effective Controls Detected</div>
+      <div style="font-size:.85em;color:var(--text2)">
+        {% if waf_detected %}
+        <div>&#9989; Web Application Firewall active and blocking malicious requests</div>
+        {% endif %}
+        {% if ssl_valid %}
+        <div>&#9989; SSL/TLS certificates valid and properly configured</div>
+        {% endif %}
+        {% if compliance.severity_counts.Critical == 0 %}
+        <div>&#9989; No critical vulnerabilities detected</div>
+        {% endif %}
+        {% if compliance.weighted_compliance >= 70 %}
+        <div>&#9989; Compliance score of {{ compliance.weighted_compliance }}% meets baseline requirements</div>
+        {% endif %}
+        {% if not (waf_detected or ssl_valid or compliance.severity_counts.Critical == 0) %}
+        <div style="color:var(--text3)">No positive controls identified — all areas need review</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Industry Comparison -->
+  <h3>Industry Benchmark Comparison</h3>
+  <p style="color:var(--text2);font-size:.82em;margin-bottom:8px">
+    Risk score compared against industry averages for organisations of similar profile.
+    Based on Verizon DBIR, IBM X-Force, and CISA KEV data.
+  </p>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center">
+      <div style="font-size:.6em;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Industry Average</div>
+      <div style="font-size:1.2em;font-weight:700;color:var(--amber);margin-top:4px">{{ benchmark_avg }}/100</div>
+      <div style="font-size:.65em;color:var(--text2)">Risk Score</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center">
+      <div style="font-size:.6em;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">This Assessment</div>
+      <div style="font-size:1.2em;font-weight:700;color:{% if compliance.risk_score > benchmark_avg %}var(--red){% else %}var(--green){% endif %};margin-top:4px">{{ compliance.risk_score }}/100</div>
+      <div style="font-size:.65em;color:var(--text2)">Risk Score</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px;text-align:center">
+      <div style="font-size:.6em;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Best Practice</div>
+      <div style="font-size:1.2em;font-weight:700;color:var(--green);margin-top:4px">{{ benchmark_best }}/100</div>
+      <div style="font-size:.65em;color:var(--text2)">Target</div>
+    </div>
+  </div>
 
   <div style="text-align:center;margin:20px 0">
     <span class="risk-badge risk-{{ compliance.overall_risk }}">Overall Risk: {{ compliance.overall_risk }}</span>
