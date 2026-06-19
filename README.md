@@ -40,10 +40,16 @@ After install, open `http://dragonpi.local` in your browser.
 | Feature | Description |
 |---------|-------------|
 | **Web Dashboard** | Custom Flask dashboard engine with 50+ tools in 11 categories, live system stats, threat intel |
-| **AI Chatbot** | OpenCode-powered AI assistant — chat to run tools, scan networks, manage the system. Supports automatic model failover if primary model is unavailable |
-| **Automated Pentesting** | 17-tool pentest pipeline (external + internal) with premium HTML/PDF reports, CVSS scoring, compliance mapping |
+| **AI Chatbot** | OpenCode-powered AI assistant — chat to run tools, scan networks, manage the system. Auto-falls back to free model if Pro unavailable |
+| **Automated Pentesting** | 24+ tool pentest pipeline (external + internal). Per-tool checkboxes, DAST vulnerability scanning, compliance scoring (ISO 27001, NIST CSF, ASD E8, PCI DSS, HIPAA, CIS) |
+| **AI Self-Healing** | When tools fail or return zero results, the Pi's AI diagnoses and attempts a fix — then retries automatically |
+| **AI Post-Pentest Review** | After each pentest, AI reviews all tool output and writes an `ai-review.txt` with improvement suggestions |
+| **Premium Reports** | Branded HTML + PDF with executive summary, compliance graphs (risk gauge, cadence bars, severity charts), CVSS scoring, remediation matrix, root cause analysis |
+| **Evidence Compilation** | All raw tool output compiled into `evidence.txt` for manual review — every command, every result |
+| **Chain Scanning** | Re-scan discovered subdomains, hosts, and URLs from the results page — select targets and launch batch scans |
+| **Job Queue** | Run up to 2 pentests in parallel. Additional jobs auto-queue and start when a slot frees |
 | **Web Terminal** | ttyd — full bash terminal in your browser, proxied through nginx |
-| **One-Click Launchers** | Click any tool → terminal opens with beginner-friendly guide |
+| **One-Click Launchers** | Click any tool → terminal opens with 44 beginner-friendly guides |
 | **System Monitor** | Live CPU/RAM/Disk/Temp with colored progress bars |
 | **RSS News Ticker** | Scrolling cybersecurity headlines from 9 sources |
 | **Threat Intelligence** | Live CVE feed, AlienVault OTX pulses, attack map |
@@ -96,7 +102,7 @@ Environment=OPENCODE_MODELS=opencode-go/deepseek-v4-pro,opencode/deepseek-v4-fla
 dragonpi.local (port 80)
 ├── Custom Dashboard    → / (Flask :5000, nginx proxy)
 ├── DragonAI Chatbot   → /chat → Flask :5000 → OpenCode CLI (multi-model)
-├── Pentest Console    → /pentest → Flask → 17-tool pipeline
+├── Pentest Console    → /pentest → Flask → 24+ tool pipeline (per-tool toggles)
 ├── Podcast Player     → /podcast → Flask → RSS feeds (client-side audio)
 ├── Web Terminal       → /terminal/ → nginx → ttyd :7681
 ├── Cockpit            → :9090
@@ -112,7 +118,7 @@ dragonpi/
 ├── install.sh                  # One-line installer
 ├── chatbot/
 │   ├── app.py                  # Flask backend (dashboard, chat, podcast, pentest routes)
-│   ├── pentest.py              # 17-tool automated pentest engine + report builder
+│   ├── pentest.py              # 24+ tool pentest engine + self-healing + AI review
 │   └── templates/
 │       ├── dashboard.html      # Custom dashboard UI
 │       ├── index.html          # Chat UI
@@ -134,6 +140,32 @@ dragonpi/
 ├── secrets.md                  # Credentials (gitignored — never committed)
 └── .gitignore
 ```
+
+## 🤖 AI Self-Healing & Post-Pentest Review
+
+### Self-Healing
+When tools fail or return zero results unexpectedly, the Pi's OpenCode AI:
+1. **Diagnoses** the failure (missing package, wrong CLI flag, broken config)
+2. **Fixes** with a safe, non-interactive bash command
+3. **Retries** the tool automatically
+4. **Logs** the diagnosis and result
+
+Triggers: nmap 0 hosts, nikto 0 findings, nuclei 0 vulns, ZAP 0 alerts (both modes).
+
+### Post-Pentest AI Review
+After each pentest finishes:
+1. All raw tool output is compiled into `evidence.txt`
+2. The AI reviews it for anomalies, missed findings, tool configuration issues
+3. An `ai-review.txt` is saved with improvement suggestions
+4. Both files appear in the report downloads
+
+### Per-Tool Toggles
+Every tool in the pipeline has its own checkbox — enable/disable individual scanners.
+External mode: 18 tools. Internal mode: 12 tools. All checked by default.
+
+### Evidence File
+`evidence.txt` contains every raw tool command output + the full pentest log.
+Download it from the reports list or via `GET /api/pentest/log/<job_id>`.
 
 ## 🔧 Development
 
