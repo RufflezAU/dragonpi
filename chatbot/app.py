@@ -288,6 +288,22 @@ def pentest_clear_reports():
     except Exception as e:
         return jsonify({"deleted": 0, "errors": [str(e)]})
 
+
+@app.route('/api/pentest/reports/merge', methods=['POST'])
+def pentest_merge_reports():
+    """Merge multiple HTML report files into one combined report."""
+    if not PENTEST_OK:
+        return jsonify({"error": "Pentest engine not available"}), 500
+    data = request.get_json(silent=True) or {}
+    files = data.get('files', [])
+    if not files or len(files) < 2:
+        return jsonify({"error": "At least 2 report files required"}), 400
+    try:
+        result = pt.merge_reports(files)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/reports/<path:filename>')
 def pentest_download_report(filename):
     """Download a report file (HTML, PDF, ZAP, or raw JSON)."""
