@@ -33,26 +33,26 @@ services:
     icon: fas fa-rocket
     subtitle: Automated external + internal pentest — full reports with download links
     tag: WEB
-    url: http://dragonpi.local/pentest
+    url: /pentest
     target: _blank
   - name: External Pentest
     icon: fas fa-globe
     subtitle: OSINT, recon, ZAP web scan, email discovery — branded report
     tag: WEB
-    url: http://dragonpi.local/pentest?mode=external
+    url: /pentest?mode=external
     target: _blank
   - name: Internal Pentest
     icon: fas fa-network-wired
     subtitle: Auto-scans local subnet — host discovery, SMB enum, service scan
     tag: WEB
-    url: http://dragonpi.local/pentest?mode=internal
+    url: /pentest?mode=internal
     target: _blank
-- name: 🤖 DragonAI Chatbot
+- name: 🤖 DragonPI AI
   icon: fas fa-robot
   items:
-  - name: DragonAI Chat
+  - name: DragonPI AI
     icon: fas fa-dragon
-    subtitle: OpenCode Go — Run tools, scan, manage via chat
+    subtitle: Your AI assistant — chat, code, and security analysis
     tag: AI
     url: /chat
     target: _blank

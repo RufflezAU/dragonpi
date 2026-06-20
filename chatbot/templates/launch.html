@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DragonPi Tool Launcher</title>
+<style>
+:root{--bg:#0a0d0b;--bg2:#0f1411;--border:#1a281f;--text:#c8d6cc;--green:#4ade80;--green2:#22c55e;--font:monospace;--radius:6px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:32px 40px;max-width:520px;width:100%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.4)}
+.card .icon{font-size:2.5em;margin-bottom:12px}
+.card h1{color:var(--green);font-size:1.4em;margin-bottom:6px}
+.card .desc{color:#6b8a74;font-size:0.85em;margin-bottom:20px}
+.cmd-box{background:#080b09;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:16px 0;text-align:left;display:flex;align-items:center;gap:10px}
+.cmd-box code{color:var(--green);font-size:0.9em;flex:1;word-break:break-all}
+.cmd-box button{background:var(--border);color:var(--text);border:none;padding:8px 14px;border-radius:4px;cursor:pointer;font-family:var(--font);font-size:0.8em;white-space:nowrap;transition:all .2s}
+.cmd-box button:hover{background:#2a4a32;color:var(--green)}
+.actions{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.actions .btn{padding:10px 22px;border-radius:var(--radius);font-family:var(--font);font-size:0.9em;cursor:pointer;text-decoration:none;font-weight:600;transition:all .2s;border:none}
+.btn-primary{background:var(--green);color:#0a0d0b}
+.btn-primary:hover{background:var(--green2)}
+.btn-secondary{background:var(--bg2);color:var(--green);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+.copied{color:var(--green);font-size:0.75em;margin-top:8px;opacity:0;transition:opacity .3s}
+.copied.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">🛠️</div>
+  <h1 id="tool-name">Tool</h1>
+  <p class="desc" id="tool-desc">Launching in DragonPi terminal...</p>
+  <div class="cmd-box">
+    <code id="tool-cmd">command</code>
+    <button onclick="copyCmd()">📋 Copy</button>
+  </div>
+  <p class="copied" id="copied-msg">Copied!</p>
+  <div class="actions">
+    <a class="btn btn-primary" id="term-link" href="#" target="_blank">▶ Open Terminal</a>
+    <button class="btn btn-secondary" onclick="copyCmd()">📋 Copy Command</button>
+    <a class="btn btn-secondary" href="/">🏠 Dashboard</a>
+  </div>
+  <p style="color:var(--text2);font-size:0.7em;margin-top:16px">Paste the command into the terminal and press Enter</p>
+</div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const tool = params.get('tool') || 'tool';
+const cmd = params.get('cmd') || tool;
+document.getElementById('tool-name').textContent = tool;
+document.getElementById('tool-desc').textContent = 'Command ready. Open terminal and paste.';
+document.getElementById('tool-cmd').textContent = cmd;
+
+function copyCmd(){
+  navigator.clipboard.writeText(cmd).then(()=>{
+    const m = document.getElementById('copied-msg');
+    m.classList.add('show');
+    setTimeout(()=>m.classList.remove('show'), 2000);
+  });
+}
+
+copyCmd();
+
+// Set terminal link to current host instead of hardcoded dragonpi.local
+const port = params.get('port') || '7681';
+const base = window.location.protocol + '//' + window.location.hostname;
+document.getElementById('term-link').href = base + ':' + port;
+</script>
+</body>
+</html>

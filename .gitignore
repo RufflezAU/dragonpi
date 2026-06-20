@@ -42,3 +42,15 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Backup / recovered / temp files
+*.bak*
+*.tmp*
+*_recovered*
+
+# External tool repos (git submodules, not part of this repo)
+/PEASS-ng/
+/Responder/
+/SecLists/
+/exploitdb/
+/theHarvester/

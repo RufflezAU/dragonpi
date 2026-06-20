@@ -357,6 +357,20 @@ a.ti-link .id:hover{color:var(--green)}
 function esc(t){const d=document.createElement('div');d.textContent=t==null?'':t;return d.innerHTML}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
 
+/* Rewrite hardcoded dragonpi.local links to current host + port */
+(function(){
+  const hostname = window.location.hostname;
+  const port = window.location.port;
+  document.querySelectorAll('a[href*="dragonpi.local"]').forEach(a => {
+    try {
+      const url = new URL(a.href);
+      url.hostname = hostname;
+      if (port && !url.port) url.port = port;
+      a.href = url.toString();
+    } catch(e) {}
+  });
+})();
+
 /* ── RSS ticker ── */
 function loadRSS(){
   fetch('/rss/feed')
