@@ -4,6 +4,13 @@
 
 A complete, ready-to-deploy cybersecurity platform for Raspberry Pi 4/5. Web dashboard, AI chatbot, 40+ tools, one-click launchers, automated pentesting — everything a security professional needs.
 
+
+<p align="center">
+  <img src="dashboard-preview.png" alt="DragonPI Dashboard Preview" width="720">
+  <br>
+  <em>Web dashboard — live system stats, 50+ pentest tools, AI chatbot, threat intelligence, and automated pentesting pipeline</em>
+</p>
+
 ## 📡 Quick Install
 
 ```bash

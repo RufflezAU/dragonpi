@@ -4,6 +4,13 @@
 # ================================================================
 set -e
 
+# Avoid sudo when already root (systemd runs as root)
+if [ "$(id -u)" -eq 0 ]; then
+    SUDO=""
+else
+    SUDO="sudo"
+fi
+
 REPO_DIR="/opt/dragonpi"
 BACKUP_DIR="/opt/dragonpi/.backups"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
@@ -55,7 +62,7 @@ for sf in "${SECRET_FILES[@]}"; do
 done
 # Also check no tracked files contain the actual password (read from gitignored secrets.md)
 if [ -f "$REPO_DIR/secrets.md" ]; then
-    PWD_VAL=$(grep -i 'password' "$REPO_DIR/secrets.md" | grep -v '^#' | grep -oE '[A-Za-z0-9!@#$%^&*()_+=-]{8,}' | head -1)
+    PWD_VAL=$(grep -iP '^\|.*password' "$REPO_DIR/secrets.md" | grep -v '^#' | awk -F'|' '{print $3}' | head -1 | xargs)
     if [ -n "$PWD_VAL" ] && git grep -nF "$PWD_VAL" -- ':!*.gitignore' ':!*.md' ':!scripts/dragonpi-update' >/dev/null 2>&1; then
         echo "  ❌ CREDENTIALS FOUND in tracked files — aborting!"
         SECRET_LEAK=1
@@ -77,29 +84,29 @@ echo "  Deploying commit: $NEW_HASH"
 # Deploy non-sensitive files
 echo ""
 echo "Deploying..."
-sudo cp "$REPO_DIR/scripts/dragonpi-shell" /usr/local/bin/dragonpi-shell
-sudo cp "$REPO_DIR/scripts/dragonpi-update" /usr/local/bin/dragonpi-update
-sudo cp "$REPO_DIR/scripts/dragonpi-screenshot" /usr/local/bin/dragonpi-screenshot
-sudo cp "$REPO_DIR/scripts/guides/"* /usr/local/bin/ 2>/dev/null || true
+$SUDO cp "$REPO_DIR/scripts/dragonpi-shell" /usr/local/bin/dragonpi-shell
+$SUDO cp "$REPO_DIR/scripts/dragonpi-update" /usr/local/bin/dragonpi-update
+$SUDO cp "$REPO_DIR/scripts/dragonpi-screenshot" /usr/local/bin/dragonpi-screenshot
+$SUDO cp "$REPO_DIR/scripts/guides/"* /usr/local/bin/ 2>/dev/null || true
 # Templates + config live at their runtime location (REPO_DIR is /opt/dragonpi); no copy needed
-sudo cp "$REPO_DIR/nginx/dragonpi.conf" /etc/nginx/sites-available/dragonpi
-sudo cp "$REPO_DIR/services/chatbot.service" /etc/systemd/system/chatbot.service
-sudo chmod +x /usr/local/bin/dragonpi-shell /usr/local/bin/dragonpi-guide-* /usr/local/bin/dragonpi-update /usr/local/bin/dragonpi-screenshot
+$SUDO cp "$REPO_DIR/nginx/dragonpi.conf" /etc/nginx/sites-available/dragonpi
+$SUDO cp "$REPO_DIR/services/chatbot.service" /etc/systemd/system/chatbot.service
+$SUDO chmod +x /usr/local/bin/dragonpi-shell /usr/local/bin/dragonpi-guide-* /usr/local/bin/dragonpi-update /usr/local/bin/dragonpi-screenshot
 
 # Make sure new scripts are executable
-sudo chmod +x "$REPO_DIR/scripts/dragonpi-screenshot" 2>/dev/null || true
+$SUDO chmod +x "$REPO_DIR/scripts/dragonpi-screenshot" 2>/dev/null || true
 
 # Reload
-sudo nginx -t 2>/dev/null && sudo systemctl reload nginx
-sudo systemctl daemon-reload
-sudo systemctl restart chatbot 2>/dev/null || true
+$SUDO nginx -t 2>/dev/null && $SUDO systemctl reload nginx
+$SUDO systemctl daemon-reload
+$SUDO systemctl restart chatbot 2>/dev/null || true
 
 # System updates
 echo ""
-UPGRADES=$(apt list --upgradable 2>/dev/null | grep -c / || echo 0)
-if [ "$UPGRADES" -gt 0 ]; then
+UPGRADES=$(apt list --upgradable 2>/dev/null | grep -c / | head -1 || echo 0)
+if [ "$UPGRADES" -gt 0 ] 2>/dev/null; then
     echo "Installing $UPGRADES system updates..."
-    sudo apt update -qq 2>/dev/null && sudo apt upgrade -y -qq 2>/dev/null | tail -2
+    $SUDO apt update -qq 2>/dev/null && $SUDO apt upgrade -y -qq 2>/dev/null | tail -2
 else
     echo "System up to date"
 fi

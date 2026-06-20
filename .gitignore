@@ -54,3 +54,6 @@ Thumbs.db
 /SecLists/
 /exploitdb/
 /theHarvester/
+
+# Allow the repo-root preview image
+!dashboard-preview.png
