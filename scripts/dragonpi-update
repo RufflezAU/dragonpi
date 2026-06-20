@@ -32,6 +32,7 @@ for f in /opt/dragonpi/dashboard/config.yml \
          /etc/systemd/system/chatbot.service /etc/systemd/system/ttyd.service \
          /usr/local/bin/dragonpi-shell /usr/local/bin/dragonpi-update \
          /usr/local/bin/dragonpi-screenshot \
+         /usr/local/bin/dragonpi-nightly-sync \
          /usr/local/bin/dragonpi-guide-*; do
     [ -f "$f" ] && cp --parents "$f" "$BACKUP_PATH/" 2>/dev/null
 done
@@ -87,11 +88,12 @@ echo "Deploying..."
 $SUDO cp "$REPO_DIR/scripts/dragonpi-shell" /usr/local/bin/dragonpi-shell
 $SUDO cp "$REPO_DIR/scripts/dragonpi-update" /usr/local/bin/dragonpi-update
 $SUDO cp "$REPO_DIR/scripts/dragonpi-screenshot" /usr/local/bin/dragonpi-screenshot
+$SUDO cp "$REPO_DIR/scripts/dragonpi-nightly-sync.sh" /usr/local/bin/dragonpi-nightly-sync
 $SUDO cp "$REPO_DIR/scripts/guides/"* /usr/local/bin/ 2>/dev/null || true
 # Templates + config live at their runtime location (REPO_DIR is /opt/dragonpi); no copy needed
 $SUDO cp "$REPO_DIR/nginx/dragonpi.conf" /etc/nginx/sites-available/dragonpi
 $SUDO cp "$REPO_DIR/services/chatbot.service" /etc/systemd/system/chatbot.service
-$SUDO chmod +x /usr/local/bin/dragonpi-shell /usr/local/bin/dragonpi-guide-* /usr/local/bin/dragonpi-update /usr/local/bin/dragonpi-screenshot
+$SUDO chmod +x /usr/local/bin/dragonpi-shell /usr/local/bin/dragonpi-guide-* /usr/local/bin/dragonpi-update /usr/local/bin/dragonpi-screenshot /usr/local/bin/dragonpi-nightly-sync
 
 # Make sure new scripts are executable
 $SUDO chmod +x "$REPO_DIR/scripts/dragonpi-screenshot" 2>/dev/null || true
