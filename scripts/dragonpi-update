@@ -29,7 +29,7 @@ for f in /opt/dragonpi/dashboard/config.yml \
          /opt/dragonpi/chatbot/templates/dashboard.html \
          /opt/dragonpi/chatbot/templates/podcast.html \
          /etc/nginx/sites-available/dragonpi.conf \
-         /etc/systemd/system/chatbot.service /etc/systemd/system/ttyd.service \
+         /etc/systemd/system/chatbot.service /etc/systemd/system/ttyd.service /etc/systemd/system/tailscale-serve.service \
          /usr/local/bin/dragonpi-shell /usr/local/bin/dragonpi-update \
          /usr/local/bin/dragonpi-screenshot \
          /usr/local/bin/dragonpi-nightly-sync \
@@ -93,6 +93,7 @@ $SUDO cp "$REPO_DIR/scripts/guides/"* /usr/local/bin/ 2>/dev/null || true
 # Templates + config live at their runtime location (REPO_DIR is /opt/dragonpi); no copy needed
 $SUDO cp "$REPO_DIR/nginx/dragonpi.conf" /etc/nginx/sites-available/dragonpi
 $SUDO cp "$REPO_DIR/services/chatbot.service" /etc/systemd/system/chatbot.service
+$SUDO cp "$REPO_DIR/services/tailscale-serve.service" /etc/systemd/system/tailscale-serve.service
 $SUDO chmod +x /usr/local/bin/dragonpi-shell /usr/local/bin/dragonpi-guide-* /usr/local/bin/dragonpi-update /usr/local/bin/dragonpi-screenshot /usr/local/bin/dragonpi-nightly-sync
 
 # Make sure new scripts are executable
@@ -101,6 +102,7 @@ $SUDO chmod +x "$REPO_DIR/scripts/dragonpi-screenshot" 2>/dev/null || true
 # Reload
 $SUDO nginx -t 2>/dev/null && $SUDO systemctl reload nginx
 $SUDO systemctl daemon-reload
+$SUDO systemctl restart tailscale-serve.service 2>/dev/null || true
 $SUDO systemctl restart chatbot 2>/dev/null || true
 
 # System updates

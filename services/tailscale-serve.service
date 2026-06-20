@@ -1,0 +1,15 @@
+[Unit]
+Description=Tailscale Serve — proxy port 443 to nginx :80
+After=tailscaled.service
+Requires=tailscaled.service
+BindsTo=tailscaled.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/tailscale serve --bg 80
+ExecStop=/usr/bin/tailscale serve --https=443 off
+RemainAfterExit=yes
+User=root
+
+[Install]
+WantedBy=multi-user.target
