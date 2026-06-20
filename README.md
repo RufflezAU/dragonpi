@@ -40,7 +40,7 @@ After install, open `http://dragonpi.local` in your browser.
 > sudo systemctl restart chatbot
 > ```
 > 
-> Get a key at [opencode.ai](https://opencode.ai). The free tier works without any key.
+> Get a key at [opencode.ai](https://opencode.ai/go?ref=HZP2B50GY3). The free tier works without any key.
 
 ## 🌐 Optional: Remote Access via Tailscale
 
@@ -90,7 +90,7 @@ Find your Pi's Tailscale IP with `tailscale status`. Pentest tools automatically
 
 ## 🧠 AI Chat Interface
 
-The DragonPI AI Chat you're talking to is built on **OpenCode Go** ([opencode.ai](https://opencode.ai)) — an AI coding assistant CLI. DragonPI wraps it with a custom Flask web UI (multi-session chat, tool integration, system control) and extends it with automated pentesting, threat intelligence, and dashboard features. The chat runs locally on your Pi — no cloud dependency beyond the AI model API.
+The DragonPI AI Chat you're talking to is built on **OpenCode Go** ([opencode.ai](https://opencode.ai/go?ref=HZP2B50GY3)) — an AI coding assistant CLI. DragonPI wraps it with a custom Flask web UI (multi-session chat, tool integration, system control) and extends it with automated pentesting, threat intelligence, and dashboard features. The chat runs locally on your Pi — no cloud dependency beyond the AI model API.
 
 ## 🛠 Tools Included (50+)
 
